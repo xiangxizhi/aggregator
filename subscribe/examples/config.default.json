@@ -82,14 +82,14 @@
             "push_to": []
         },
         "github": {
-            "enable": true,
+            "enable": false,
             "pages": 2,
             "push_to": [],
             "exclude": "",
             "exclude_repos": []
         },
         "twitter": {
-            "enable": true,
+            "enable": false,
             "users": {
                 "username": {
                     "enable": true,
