@@ -52,7 +52,7 @@
         },
         "telegram": {
             "enable": true,
-            "pages": 5,
+            "pages": 1,
             "exclude": "",
             "channels": {
                 "channel": {
@@ -115,7 +115,7 @@
         ],
         "pages": [
             {
-                "enable": true,
+                "enable": false,
                 "url": "",
                 "include": "",
                 "exclude": "",
