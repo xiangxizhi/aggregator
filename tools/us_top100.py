@@ -7,6 +7,7 @@ import math
 import os
 import random
 import statistics
+import subprocess
 import sys
 import time
 import urllib.request
@@ -19,7 +20,7 @@ sys.path.insert(0, str(ROOT / "subscribe"))
 
 import executable
 import location
-import pipeline
+import clash
 import utils
 import yaml
 from airport import AirPort
@@ -30,7 +31,7 @@ SOURCE_URLS = [
     "https://raw.githubusercontent.com/MatinGhanbari/v2ray-configs/main/subscriptions/v2ray/all_sub.txt",
 ]
 ALLOWED_TYPES = {"vmess", "vless", "trojan", "ss"}
-MAX_CANDIDATES = 3000
+MAX_CANDIDATES = 3000  # v2: strict successful Mihomo checks only
 BATCH_SIZE = 80
 SPEED_BYTES = 262144
 OUT = ROOT / "output"
@@ -54,20 +55,37 @@ def run_alive_check(nodes, clash_bin):
     alive = []
     for index, batch in enumerate(chunks(nodes, BATCH_SIZE), 1):
         print(f"[alive] batch {index}, candidates={len(batch)}", flush=True)
-        checked = pipeline.check_alive_proxies(
-            proxies=batch,
-            clash_bin=clash_bin,
-            workspace=str(WORKSPACE),
-            filename="us_top100_test.yaml",
-            timeout=12000,
-            test_url=TEST_URL,
-            delay=15000,
-            num_threads=32,
-            display=False,
-            skip=False,
-            group="us-top100",
+        filename = "us_top100_test.yaml"
+        checked = clash.generate_config(str(WORKSPACE), batch, filename)
+        binpath = WORKSPACE / clash_bin
+        process = subprocess.Popen(
+            [str(binpath), "-d", str(WORKSPACE), "-f", str(WORKSPACE / filename)],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
-        alive.extend(checked or [])
+        try:
+            time.sleep(7)
+            params = [
+                [item, clash.EXTERNAL_CONTROLLER, 15000, TEST_URL, 15000, False]
+                for item in checked if isinstance(item, dict)
+            ]
+            masks = utils.multi_thread_run(
+                func=clash.check,
+                tasks=params,
+                num_threads=32,
+                show_progress=False,
+                description="Mihomo connectivity checks",
+            ) or []
+            alive.extend([checked[i] for i in range(min(len(checked), len(masks))) if masks[i]])
+        finally:
+            try:
+                process.terminate()
+                process.wait(timeout=5)
+            except Exception:
+                try:
+                    process.kill()
+                except Exception:
+                    pass
     return alive
 
 
