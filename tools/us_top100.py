@@ -24,7 +24,7 @@ import push
 import utils
 import workflow
 import yaml
-from config.models import ProcessConfig
+from config.models import ProcessConfig, YandexConfig, GithubConfig
 from crawl import engine as crawl_engine
 from geoip2 import database
 from location import ProxyInfo, ProxyQueryResult
@@ -217,7 +217,7 @@ def main():
     report = {
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "runner": "GitHub Actions ubuntu-latest",
-        "sources": ["Telegram channels configured in SUBSCRIBE_CONF (only; other crawlers disabled; one page per channel)"],
+        "sources": ["Telegram", "Yandex Search", "GitHub Code/Issues"],
         "raw_candidates": 0,
         "parsed_supported": 0,
         "alive": 0,
@@ -242,31 +242,48 @@ def main():
         if not pc.crawl or not pc.crawl.telegram:
             raise RuntimeError("Telegram crawler is not configured in SUBSCRIBE_CONF")
 
-        # Enforce the user's previously selected crawl scope: Telegram only, one page.
-        for key in ("google", "yandex", "twitter", "github"):
+        # Use three complementary public sources: configured Telegram channels,
+        # Yandex subscription search, and GitHub code/issues search.
+        for key in ("google", "twitter"):
             section = getattr(pc.crawl, key, None)
             if section is not None:
                 section.enable = False
         pc.crawl.repositories = []
         pc.crawl.pages = []
         pc.crawl.scripts = []
+        if pc.crawl.telegram is None:
+            raise RuntimeError("Telegram crawler is not configured in SUBSCRIBE_CONF")
         pc.crawl.telegram.enable = True
-        pc.crawl.telegram.pages = 1
+        pc.crawl.telegram.pages = 5
+        if pc.crawl.yandex is None:
+            pc.crawl.yandex = YandexConfig()
+        pc.crawl.yandex.enable = True
+        pc.crawl.yandex.pages = 5
+        if pc.crawl.github is None:
+            pc.crawl.github = GithubConfig()
+        pc.crawl.github.enable = True
+        pc.crawl.github.pages = 5
+
+        # Exclude unrelated preconfigured sites from this source-focused run.
+        pc.sites = []
 
         pushtool = push.get_instance(pc.storage)
         pc.verify(pushtool)
-        telegram_sites = crawl_engine.run(
+        collected_sites = crawl_engine.run(
             config=pc.crawl,
             storage=pc.storage,
             num_threads=32,
             display=False,
             mode=0,
         )
-        pc.sites.extend(telegram_sites or [])
-        report["telegram_sites"] = len(telegram_sites or [])
-        if not telegram_sites:
+        report["collected_sites"] = len(collected_sites or [])
+        report["sites_by_source"] = {}
+        for site in collected_sites or []:
+            source = str(getattr(site, "origin", "unknown"))
+            report["sites_by_source"][source] = report["sites_by_source"].get(source, 0) + 1
+        if not collected_sites:
             raise RuntimeError(
-                "Telegram returned no usable subscription sites; check that at least one configured channel has push_to"
+                "Telegram/Yandex/GitHub returned no usable subscription sites; check source access and GH_TOKEN"
             )
 
         clash_bin, subconverter_bin = executable.which_bin()
@@ -274,7 +291,7 @@ def main():
         utils.chmod(str(ROOT / "subconverter" / subconverter_bin))
 
         tasks, _ = pipeline.assign_sites(
-            sites=pc.sites,
+            sites=collected_sites,
             groups=pc.groups,
             retry=2,
             bin_name=subconverter_bin,
