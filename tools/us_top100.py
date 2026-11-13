@@ -10,7 +10,6 @@ import statistics
 import subprocess
 import sys
 import time
-import urllib.request
 from datetime import datetime, timezone
 from functools import partial
 from pathlib import Path
@@ -21,29 +20,25 @@ sys.path.insert(0, str(ROOT / "subscribe"))
 import executable
 import location
 import clash
+import pipeline
+import push
 import utils
+import workflow
 import yaml
-from airport import AirPort
+from config.models import ProcessConfig
+from crawl import engine as crawl_engine
 from geoip2 import database
 from location import ProxyInfo, ProxyQueryResult
 
-SOURCE_URLS = [
-    "https://raw.githubusercontent.com/MatinGhanbari/v2ray-configs/main/subscriptions/v2ray/all_sub.txt",
-]
 ALLOWED_TYPES = {"vmess", "vless", "trojan", "ss"}
-MAX_CANDIDATES = 3000  # v2: strict successful Mihomo checks only
+ALLOWED_TYPES = {"vmess", "vless", "trojan", "ss"}
+MAX_CANDIDATES = 3000  # Telegram-only; strict successful Mihomo checks only
 BATCH_SIZE = 80
 SPEED_BYTES = 262144
 OUT = ROOT / "output"
 WORKSPACE = ROOT / "clash"
 TEST_URL = "https://www.gstatic.com/generate_204"
 SPEED_URL = "https://speed.cloudflare.com/__down?bytes={}"
-
-
-def fetch_text(url: str) -> str:
-    req = urllib.request.Request(url, headers={"User-Agent": utils.USER_AGENT})
-    with urllib.request.urlopen(req, timeout=90) as response:
-        return response.read().decode("utf-8", "replace")
 
 
 def chunks(items, size):
@@ -224,7 +219,7 @@ def main():
     report = {
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "runner": "GitHub Actions ubuntu-latest",
-        "sources": SOURCE_URLS,
+        "sources": ["Telegram channels configured in SUBSCRIBE_CONF (only; other crawlers disabled; one page per channel)"],
         "raw_candidates": 0,
         "parsed_supported": 0,
         "alive": 0,
@@ -239,32 +234,65 @@ def main():
         ],
     }
     try:
-        raw_lines = []
-        for url in SOURCE_URLS:
-            try:
-                text = fetch_text(url)
-                raw_lines.append(text)
-                print(f"[source] fetched {url}, chars={len(text)}", flush=True)
-            except Exception as exc:
-                print(f"[source] failed {url}: {exc}", flush=True)
-        if not raw_lines:
-            raise RuntimeError("No public source could be fetched")
+        config_url = os.environ.get("SUBSCRIBE_CONF", "").strip()
+        if not config_url:
+            raise RuntimeError("Missing repository secret SUBSCRIBE_CONF")
+        raw_config = utils.http_get(url=config_url, retry=3, timeout=120)
+        if not raw_config:
+            raise RuntimeError("Could not download the existing Aggregator configuration")
+        pc = ProcessConfig.parse(json.loads(raw_config))
+        if not pc.crawl or not pc.crawl.telegram:
+            raise RuntimeError("Telegram crawler is not configured in SUBSCRIBE_CONF")
+
+        # Enforce the user's previously selected crawl scope: Telegram only, one page.
+        for key in ("google", "yandex", "twitter", "github"):
+            section = getattr(pc.crawl, key, None)
+            if section is not None:
+                section.enable = False
+        pc.crawl.repositories = []
+        pc.crawl.pages = []
+        pc.crawl.scripts = []
+        pc.crawl.telegram.enable = True
+        pc.crawl.telegram.pages = 1
+
+        pushtool = push.get_instance(pc.storage)
+        pc.verify(pushtool)
+        telegram_sites = crawl_engine.run(
+            config=pc.crawl,
+            storage=pc.storage,
+            num_threads=32,
+            display=False,
+            mode=0,
+        )
+        pc.sites.extend(telegram_sites or [])
+        report["telegram_sites"] = len(telegram_sites or [])
+        if not telegram_sites:
+            raise RuntimeError(
+                "Telegram returned no usable subscription sites; check that at least one configured channel has push_to"
+            )
 
         clash_bin, subconverter_bin = executable.which_bin()
         utils.chmod(str(WORKSPACE / clash_bin))
         utils.chmod(str(ROOT / "subconverter" / subconverter_bin))
 
+        tasks, _ = pipeline.assign_sites(
+            sites=pc.sites,
+            groups=pc.groups,
+            retry=2,
+            bin_name=subconverter_bin,
+            allow_gmail_alias=False,
+            special_protocols=True,
+        )
+        if not tasks:
+            raise RuntimeError("No valid subscription tasks were created from the Telegram-only configuration")
+        task_results = utils.multi_process_run(
+            func=workflow.executewrapper,
+            tasks=tasks,
+        ) or []
         parsed = []
-        for index, text in enumerate(raw_lines):
-            parsed.extend(
-                AirPort.decode(
-                    text=text,
-                    program=subconverter_bin,
-                    artifact=f"us-top100-{index}",
-                    special=True,
-                    do_verify=True,
-                )
-            )
+        for result in task_results:
+            if result and len(result) >= 2 and result[1]:
+                parsed.extend(result[1])
         parsed = [
             p for p in parsed
             if isinstance(p, dict) and str(p.get("type", "")).lower() in ALLOWED_TYPES
@@ -281,7 +309,7 @@ def main():
             )
             unique.setdefault(key, p)
         candidates = list(unique.values())
-        report["raw_candidates"] = sum(len(x.splitlines()) for x in raw_lines)
+        report["raw_candidates"] = len(parsed)
         report["parsed_supported"] = len(candidates)
         if len(candidates) > MAX_CANDIDATES:
             random.Random(20261113).shuffle(candidates)
