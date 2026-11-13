@@ -25,8 +25,9 @@ concurrency:
 
 jobs:
   build:
+    # GitHub-hosted jobs support up to 6 hours. Reserve 5 hours for repeated attempts.
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 360
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,10 +46,61 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build and rank US nodes
-        run: python -u tools/us_top100.py
+      - name: Repeatedly discover, verify and rank US egress nodes (up to 5 hours)
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p output/attempts
+          deadline=$((SECONDS + 18000))
+          attempt=0
+          success=0
 
-      - name: Upload results
+          while (( SECONDS < deadline )); do
+            attempt=$((attempt + 1))
+            remaining=$((deadline - SECONDS))
+            attempt_limit=3000
+            if (( remaining < attempt_limit )); then
+              attempt_limit=$remaining
+            fi
+
+            echo "========== ROUND ${attempt}; remaining budget: ${remaining}s =========="
+            set +e
+            timeout --signal=TERM --kill-after=30 "${attempt_limit}s" \
+              python -u tools/us_top100.py 2>&1 | tee "output/attempts/round-${attempt}.log"
+            rc=${PIPESTATUS[0]}
+            set -e
+
+            if [[ -f output/report.json ]]; then
+              cp output/report.json "output/attempts/round-${attempt}-report.json"
+            fi
+
+            if (( rc == 0 )); then
+              success=1
+              echo "SUCCESS on round ${attempt}"
+              break
+            fi
+
+            echo "Round ${attempt} did not produce a verified subscription (exit=${rc})."
+            if (( SECONDS >= deadline )); then
+              break
+            fi
+            echo "Waiting 30 seconds before refreshing sources and trying again..."
+            sleep 30
+          done
+
+          {
+            echo "attempts=${attempt}"
+            echo "success=${success}"
+            echo "time_budget_seconds=18000"
+            echo "finished_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } | tee output/overnight-summary.txt
+
+          if (( success == 0 )); then
+            echo "No verified US-egress subscription was produced within the five-hour run."
+            exit 1
+          fi
+
+      - name: Upload results and all attempt logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -56,5 +108,7 @@ jobs:
           path: |
             output/us_top100.yaml
             output/report.json
+            output/overnight-summary.txt
+            output/attempts/
           if-no-files-found: warn
           retention-days: 7
