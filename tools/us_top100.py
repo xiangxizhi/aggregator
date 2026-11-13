@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-# Build a private, US-egress-only Clash/Mihomo subscription from public node feeds.
+# Build a US-egress-only Clash/Mihomo subscription from the configured Telegram crawl.
 from __future__ import annotations
 
 import json
-import math
 import os
 import random
 import statistics
@@ -30,7 +29,6 @@ from crawl import engine as crawl_engine
 from geoip2 import database
 from location import ProxyInfo, ProxyQueryResult
 
-ALLOWED_TYPES = {"vmess", "vless", "trojan", "ss"}
 ALLOWED_TYPES = {"vmess", "vless", "trojan", "ss"}
 MAX_CANDIDATES = 3000  # Telegram-only; strict successful Mihomo checks only
 BATCH_SIZE = 80
