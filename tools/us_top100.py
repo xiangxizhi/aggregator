@@ -1,0 +1,365 @@
+#!/usr/bin/env python3
+# Build a private, US-egress-only Clash/Mihomo subscription from public node feeds.
+from __future__ import annotations
+
+import json
+import math
+import os
+import random
+import statistics
+import sys
+import time
+import urllib.request
+from datetime import datetime, timezone
+from functools import partial
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "subscribe"))
+
+import executable
+import location
+import pipeline
+import utils
+import yaml
+from airport import AirPort
+from geoip2 import database
+from location import ProxyInfo, ProxyQueryResult
+
+SOURCE_URLS = [
+    "https://raw.githubusercontent.com/MatinGhanbari/v2ray-configs/main/subscriptions/v2ray/all_sub.txt",
+]
+ALLOWED_TYPES = {"vmess", "vless", "trojan", "ss"}
+MAX_CANDIDATES = 3000
+BATCH_SIZE = 80
+SPEED_BYTES = 262144
+OUT = ROOT / "output"
+WORKSPACE = ROOT / "clash"
+TEST_URL = "https://www.gstatic.com/generate_204"
+SPEED_URL = "https://speed.cloudflare.com/__down?bytes={}"
+
+
+def fetch_text(url: str) -> str:
+    req = urllib.request.Request(url, headers={"User-Agent": utils.USER_AGENT})
+    with urllib.request.urlopen(req, timeout=90) as response:
+        return response.read().decode("utf-8", "replace")
+
+
+def chunks(items, size):
+    for start in range(0, len(items), size):
+        yield items[start : start + size]
+
+
+def run_alive_check(nodes, clash_bin):
+    alive = []
+    for index, batch in enumerate(chunks(nodes, BATCH_SIZE), 1):
+        print(f"[alive] batch {index}, candidates={len(batch)}", flush=True)
+        checked = pipeline.check_alive_proxies(
+            proxies=batch,
+            clash_bin=clash_bin,
+            workspace=str(WORKSPACE),
+            filename="us_top100_test.yaml",
+            timeout=12000,
+            test_url=TEST_URL,
+            delay=15000,
+            num_threads=32,
+            display=False,
+            skip=False,
+            group="us-top100",
+        )
+        alive.extend(checked or [])
+    return alive
+
+
+def locate_us(nodes, reader):
+    us_nodes = []
+    geo_confirmed = 0
+    for index, batch in enumerate(chunks(nodes, BATCH_SIZE), 1):
+        print(f"[geoip-egress] batch {index}, nodes={len(batch)}", flush=True)
+        results = location.batch_query(
+            proxies=batch,
+            func=partial(location.locate_by_ipinfo, reader=reader),
+            num_threads=24,
+            show_progress=False,
+            description="Checking proxy egress country",
+            digits=3,
+        )
+        for item in results or []:
+            if not item or not item.success or not item.result:
+                continue
+            country = (item.result.country or "").strip().upper()
+            if country in ("美国", "US"):
+                geo_confirmed += 1
+                proxy = item.proxy
+                proxy["name"] = proxy.pop("_original_name", proxy.get("name", "US node"))
+                us_nodes.append(proxy)
+    return us_nodes, geo_confirmed
+
+
+def speed_probe(proxy, port):
+    latency_samples = []
+    speed_samples = []
+    headers = location._origin_headers(TEST_URL)
+    for _ in range(3):
+        started = time.perf_counter()
+        try:
+            status, _ = location._request_through_proxy(port, TEST_URL, headers, timeout=15)
+            elapsed = (time.perf_counter() - started) * 1000
+            if status in (200, 204):
+                latency_samples.append(elapsed)
+        except Exception:
+            pass
+
+    download_url = SPEED_URL.format(SPEED_BYTES)
+    download_headers = location._origin_headers(download_url)
+    for _ in range(2):
+        started = time.perf_counter()
+        try:
+            status, body = location._request_through_proxy(
+                port, download_url, download_headers, timeout=25
+            )
+            elapsed = max(time.perf_counter() - started, 0.001)
+            if status == 200 and len(body) >= int(SPEED_BYTES * 0.75):
+                speed_samples.append(len(body) * 8 / elapsed / 1_000_000)
+        except Exception:
+            pass
+
+    proxy["_latency_samples"] = latency_samples
+    proxy["_speed_samples"] = speed_samples
+    proxy["_latency_ms"] = statistics.median(latency_samples) if latency_samples else 99999.0
+    proxy["_speed_mbps"] = statistics.median(speed_samples) if speed_samples else 0.0
+    if latency_samples:
+        mean_latency = statistics.mean(latency_samples)
+        jitter = statistics.pstdev(latency_samples) / max(mean_latency, 1.0)
+    else:
+        jitter = 1.0
+    proxy["_stability"] = (len(latency_samples) / 3.0) / (1.0 + jitter)
+    ok = len(latency_samples) >= 2 and len(speed_samples) >= 1
+    return ProxyQueryResult(
+        proxy=proxy,
+        result=ProxyInfo(name=str(proxy.get("name", ""))),
+        success=ok,
+    )
+
+
+def measure_and_rank(nodes):
+    measured = []
+    for index, batch in enumerate(chunks(nodes, BATCH_SIZE), 1):
+        print(f"[speed] batch {index}, US nodes={len(batch)}", flush=True)
+        results = location.batch_query(
+            proxies=batch,
+            func=speed_probe,
+            num_threads=16,
+            show_progress=False,
+            description="Measuring latency and throughput",
+            digits=3,
+        )
+        for item in results or []:
+            if not item or not item.success:
+                continue
+            proxy = item.proxy
+            latency = float(proxy.get("_latency_ms", 99999.0))
+            speed = float(proxy.get("_speed_mbps", 0.0))
+            stability = float(proxy.get("_stability", 0.0))
+            latency_score = 1.0 / (1.0 + latency / 100.0)
+            speed_score = speed / (speed + 10.0)
+            score = 0.45 * latency_score + 0.40 * speed_score + 0.15 * stability
+            proxy["_score"] = score
+            measured.append(proxy)
+    measured.sort(
+        key=lambda p: (
+            -float(p.get("_score", 0)),
+            float(p.get("_latency_ms", 99999)),
+            -float(p.get("_speed_mbps", 0)),
+        )
+    )
+    return measured
+
+
+def clean_proxy(proxy, rank):
+    item = dict(proxy)
+    original = item.pop("_original_name", item.get("name", "node"))
+    item.pop("_latency_samples", None)
+    item.pop("_speed_samples", None)
+    latency = float(item.pop("_latency_ms", 0))
+    speed = float(item.pop("_speed_mbps", 0))
+    stability = float(item.pop("_stability", 0))
+    score = float(item.pop("_score", 0))
+    item.pop("sub", None)
+    item.pop("liveness", None)
+    item.pop("cdn", None)
+    item.pop("renamed", None)
+    item["name"] = f"US-{rank:03d} | {str(original)[:48]}"
+    return item, {
+        "rank": rank,
+        "name": item["name"],
+        "type": item.get("type", ""),
+        "latency_ms": round(latency, 1),
+        "download_mbps": round(speed, 2),
+        "stability_score": round(stability, 3),
+        "score": round(score, 5),
+    }
+
+
+def main():
+    OUT.mkdir(parents=True, exist_ok=True)
+    report = {
+        "created_utc": datetime.now(timezone.utc).isoformat(),
+        "runner": "GitHub Actions ubuntu-latest",
+        "sources": SOURCE_URLS,
+        "raw_candidates": 0,
+        "parsed_supported": 0,
+        "alive": 0,
+        "egress_country_confirmed": 0,
+        "us_egress_confirmed": 0,
+        "speed_measured": 0,
+        "final_count": 0,
+        "notes": [
+            "Country is checked through each proxy's actual egress connection, not the node label or origin server IP.",
+            "Cloud runner measurements are not the user's phone-network measurements.",
+            "Download speed uses two small Cloudflare test downloads per confirmed US node.",
+        ],
+    }
+    try:
+        raw_lines = []
+        for url in SOURCE_URLS:
+            try:
+                text = fetch_text(url)
+                raw_lines.append(text)
+                print(f"[source] fetched {url}, chars={len(text)}", flush=True)
+            except Exception as exc:
+                print(f"[source] failed {url}: {exc}", flush=True)
+        if not raw_lines:
+            raise RuntimeError("No public source could be fetched")
+
+        clash_bin, subconverter_bin = executable.which_bin()
+        utils.chmod(str(WORKSPACE / clash_bin))
+        utils.chmod(str(ROOT / "subconverter" / subconverter_bin))
+
+        parsed = []
+        for index, text in enumerate(raw_lines):
+            parsed.extend(
+                AirPort.decode(
+                    text=text,
+                    program=subconverter_bin,
+                    artifact=f"us-top100-{index}",
+                    special=True,
+                    do_verify=True,
+                )
+            )
+        parsed = [
+            p for p in parsed
+            if isinstance(p, dict) and str(p.get("type", "")).lower() in ALLOWED_TYPES
+            and p.get("server") and p.get("port")
+        ]
+        unique = {}
+        for p in parsed:
+            key = (
+                str(p.get("type", "")).lower(),
+                str(p.get("server", "")).lower(),
+                str(p.get("port", "")),
+                str(p.get("uuid", p.get("password", ""))),
+                str(p.get("name", "")),
+            )
+            unique.setdefault(key, p)
+        candidates = list(unique.values())
+        report["raw_candidates"] = sum(len(x.splitlines()) for x in raw_lines)
+        report["parsed_supported"] = len(candidates)
+        if len(candidates) > MAX_CANDIDATES:
+            random.Random(20261113).shuffle(candidates)
+            candidates = candidates[:MAX_CANDIDATES]
+        print(f"[parse] supported unique candidates={len(candidates)}", flush=True)
+        if not candidates:
+            raise RuntimeError("No supported VMess/VLESS/Trojan/SS nodes parsed")
+
+        alive = run_alive_check(candidates, clash_bin)
+        report["alive"] = len(alive)
+        print(f"[alive] passed={len(alive)}", flush=True)
+        if not alive:
+            raise RuntimeError("No node passed Mihomo connectivity tests")
+
+        for p in alive:
+            p["_original_name"] = str(p.get("name", "node"))
+
+        mmdb_dir = OUT / "geoip"
+        mmdb_dir.mkdir(exist_ok=True)
+        reader = location.load_mmdb(
+            directory=str(mmdb_dir),
+            repo="Loyalsoldier/geoip",
+            filename="Country.mmdb",
+            update=True,
+        )
+        if not reader:
+            fallback = WORKSPACE / "Country.mmdb"
+            if not fallback.exists():
+                raise RuntimeError("Could not obtain a GeoIP country database")
+            reader = database.Reader(str(fallback))
+
+        try:
+            us_nodes, confirmed = locate_us(alive, reader)
+        finally:
+            reader.close()
+        report["egress_country_confirmed"] = confirmed
+        report["us_egress_confirmed"] = len(us_nodes)
+        print(f"[geoip-egress] US confirmed={len(us_nodes)}", flush=True)
+        if not us_nodes:
+            raise RuntimeError("No live node had a verifiably US egress IP")
+
+        measured = measure_and_rank(us_nodes)
+        report["speed_measured"] = len(measured)
+        top = measured[:100]
+        if not top:
+            raise RuntimeError("No US node completed both latency and download tests")
+
+        clean_nodes, ranking = [], []
+        for rank, proxy in enumerate(top, 1):
+            node, row = clean_proxy(proxy, rank)
+            clean_nodes.append(node)
+            ranking.append(row)
+
+        names = [p["name"] for p in clean_nodes]
+        config = {
+            "mixed-port": 7890,
+            "allow-lan": False,
+            "mode": "rule",
+            "log-level": "warning",
+            "ipv6": False,
+            "proxies": clean_nodes,
+            "proxy-groups": [
+                {"name": "美国优选", "type": "select", "proxies": names},
+                {
+                    "name": "美国自动测速",
+                    "type": "url-test",
+                    "proxies": names,
+                    "url": "https://www.gstatic.com/generate_204",
+                    "interval": 300,
+                    "tolerance": 100,
+                },
+            ],
+            "rules": ["MATCH,美国优选"],
+        }
+        subscription_path = OUT / "us_top100.yaml"
+        with subscription_path.open("w", encoding="utf-8") as handle:
+            yaml.safe_dump(config, handle, allow_unicode=True, sort_keys=False)
+
+        report["final_count"] = len(clean_nodes)
+        report["ranking"] = ranking
+        report["status"] = "success"
+        report["test_limits"] = (
+            "Latency is the median of up to three HTTPS 204 requests. Download speed is the median of "
+            "up to two 256 KiB Cloudflare downloads. These are GitHub runner results, not handset results."
+        )
+    except Exception as exc:
+        report["status"] = "incomplete"
+        report["error"] = str(exc)
+        print(f"[ERROR] {exc}", flush=True)
+    finally:
+        (OUT / "report.json").write_text(
+            json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+    if report.get("status") != "success":
+        raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    main()
