@@ -1,6 +1,11 @@
 name: US Top 100 Proxies
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/us_top100.py'
+      - '.github/workflows/us-top100.yml'
   workflow_dispatch:
   schedule:
     # Every Friday at 21:15 China Standard Time (13:15 UTC)
