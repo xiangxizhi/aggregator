@@ -2,8 +2,10 @@
 # Build a US-egress-only Clash/Mihomo subscription from the configured Telegram crawl.
 from __future__ import annotations
 
+import base64
 import json
 import os
+import re
 import random
 import statistics
 import subprocess
@@ -24,13 +26,13 @@ import push
 import utils
 import workflow
 import yaml
-from config.models import ProcessConfig, YandexConfig, GithubConfig
+from config.models import ProcessConfig, YandexConfig, GithubConfig, NodeInput, SiteConfig
 from crawl import engine as crawl_engine
 from geoip2 import database
 from location import ProxyInfo, ProxyQueryResult
 
 ALLOWED_TYPES = {"vmess", "vless", "trojan", "ss"}
-MAX_CANDIDATES = 3000  # Telegram-only; strict successful Mihomo checks only
+MAX_CANDIDATES = 5000  # Public feeds plus configured crawlers; strict successful Mihomo checks only
 BATCH_SIZE = 80
 SPEED_BYTES = 262144
 OUT = ROOT / "output"
@@ -212,12 +214,74 @@ def clean_proxy(proxy, rank):
     }
 
 
+
+def collect_public_feeds(groups):
+    """Collect two openly published feeds; each candidate is independently re-tested."""
+    push_to = list(groups.keys())
+    stats = {"pawdroid_uris": 0, "au1rxx_proxies": 0}
+    if not push_to:
+        print("[public-feeds] skipped: no output group configured", flush=True)
+        return [], stats
+
+    sites = []
+    # Pawdroid's README documents this as a public, refreshed subscription feed.
+    try:
+        raw = utils.http_get(
+            url="https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub",
+            retry=2, timeout=45,
+        )
+        if raw:
+            compact = re.sub(r"\s+", "", raw.strip())
+            decoded = base64.b64decode(compact + "=" * (-len(compact) % 4)).decode("utf-8", errors="ignore")
+            uris = list(dict.fromkeys(
+                re.findall(r"(?im)^(?:vmess|vless|trojan|ss)://[^\s]+", decoded)
+            ))
+            if uris:
+                sites.append(SiteConfig(
+                    name="public-pawdroid",
+                    nodes=NodeInput(uris=uris),
+                    push_to=push_to,
+                    origin="PUBLIC_FEED",
+                ))
+                stats["pawdroid_uris"] = len(uris)
+    except Exception as exc:
+        print(f"[public-feeds] Pawdroid fetch/parse failed: {exc}", flush=True)
+
+    # This feed is pre-labelled US, but that label is deliberately NOT trusted:
+    # all imported nodes must pass our own live-proxy egress GeoIP test.
+    try:
+        raw = utils.http_get(
+            url="https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/by-country/clash-US.yaml",
+            retry=2, timeout=45,
+        )
+        data = yaml.safe_load(raw) if raw else {}
+        proxies = data.get("proxies", []) if isinstance(data, dict) else []
+        proxies = [
+            item for item in proxies
+            if isinstance(item, dict)
+            and str(item.get("type", "")).lower() in ALLOWED_TYPES
+            and item.get("server") and item.get("port")
+        ]
+        if proxies:
+            sites.append(SiteConfig(
+                name="public-au1rxx-us-shard",
+                nodes=NodeInput(proxies=proxies),
+                push_to=push_to,
+                origin="PUBLIC_FEED",
+            ))
+            stats["au1rxx_proxies"] = len(proxies)
+    except Exception as exc:
+        print(f"[public-feeds] Au1rxx fetch/parse failed: {exc}", flush=True)
+
+    print(f"[public-feeds] imported={stats}", flush=True)
+    return sites, stats
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     report = {
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "runner": "GitHub Actions ubuntu-latest",
-        "sources": ["Telegram", "Yandex Search", "GitHub Code/Issues"],
+        "sources": ["Telegram", "Yandex Search", "GitHub Code/Issues", "Pawdroid/Free-servers", "Au1rxx/free-vpn-subscriptions (US shard, re-verified)"],
         "raw_candidates": 0,
         "parsed_supported": 0,
         "alive": 0,
@@ -239,8 +303,8 @@ def main():
         if not raw_config:
             raise RuntimeError("Could not download the existing Aggregator configuration")
         pc = ProcessConfig.parse(json.loads(raw_config))
-        if not pc.crawl or not pc.crawl.telegram:
-            raise RuntimeError("Telegram crawler is not configured in SUBSCRIBE_CONF")
+        if not pc.crawl:
+            raise RuntimeError("Crawler configuration is missing in SUBSCRIBE_CONF")
 
         # Use three complementary public sources: configured Telegram channels,
         # Yandex subscription search, and GitHub code/issues search.
@@ -251,10 +315,9 @@ def main():
         pc.crawl.repositories = []
         pc.crawl.pages = []
         pc.crawl.scripts = []
-        if pc.crawl.telegram is None:
-            raise RuntimeError("Telegram crawler is not configured in SUBSCRIBE_CONF")
-        pc.crawl.telegram.enable = True
-        pc.crawl.telegram.pages = 5
+        if pc.crawl.telegram is not None:
+            pc.crawl.telegram.enable = True
+            pc.crawl.telegram.pages = 5
         if pc.crawl.yandex is None:
             pc.crawl.yandex = YandexConfig()
         pc.crawl.yandex.enable = True
@@ -275,16 +338,17 @@ def main():
             num_threads=32,
             display=False,
             mode=0,
-        )
-        report["collected_sites"] = len(collected_sites or [])
+        ) or []
+        public_sites, public_stats = collect_public_feeds(pc.groups)
+        collected_sites.extend(public_sites)
+        report["public_feed_stats"] = public_stats
+        report["collected_sites"] = len(collected_sites)
         report["sites_by_source"] = {}
         for site in collected_sites or []:
             source = str(getattr(site, "origin", "unknown"))
             report["sites_by_source"][source] = report["sites_by_source"].get(source, 0) + 1
         if not collected_sites:
-            raise RuntimeError(
-                "Telegram/Yandex/GitHub returned no usable subscription sites; check source access and GH_TOKEN"
-            )
+            raise RuntimeError("All configured crawlers and independent public feeds returned no usable sources")
 
         clash_bin, subconverter_bin = executable.which_bin()
         utils.chmod(str(WORKSPACE / clash_bin))
@@ -299,7 +363,7 @@ def main():
             special_protocols=True,
         )
         if not tasks:
-            raise RuntimeError("No valid subscription tasks were created from the Telegram-only configuration")
+            raise RuntimeError("No valid subscription tasks were created from the collected public sources")
         task_results = utils.multi_process_run(
             func=workflow.executewrapper,
             tasks=tasks,
