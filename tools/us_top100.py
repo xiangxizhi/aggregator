@@ -480,7 +480,7 @@ def main():
         "us_egress_confirmed": 0,
         "speed_measured": 0,
         "final_count": 0,
-        "target_count": 20,
+        "target_count": 50,
         "protocol_counts": {},
         "stage_counts": {},
         "notes": [
@@ -686,7 +686,7 @@ def main():
         report["protocol_counts"]["after_dedup"] = protocol_counts(diverse)
         report["stage_counts"]["after_dedup"] = len(diverse)
         top, selection_quota = select_protocol_diverse(
-            diverse, target=20, minimum_per_protocol=3
+            diverse, target=50, minimum_per_protocol=3
         )
         report["protocol_selection_minimum"] = 3
         report["protocol_selection_quota"] = selection_quota
@@ -709,9 +709,9 @@ def main():
             "ipv6": False,
             "proxies": clean_nodes,
             "proxy-groups": [
-                {"name": "美国优选20", "type": "select", "proxies": names},
+                {"name": "美国优选50", "type": "select", "proxies": names},
                 {
-                    "name": "美国自动测速20",
+                    "name": "美国自动测速50",
                     "type": "url-test",
                     "proxies": names,
                     "url": "https://www.gstatic.com/generate_204",
