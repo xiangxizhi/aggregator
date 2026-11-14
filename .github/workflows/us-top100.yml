@@ -1,4 +1,4 @@
-name: US Top 50 Proxies
+name: US Top 36 Proxies
 
 on:
   push:
@@ -22,7 +22,7 @@ permissions:
 
 # Keep Top-50 runs isolated from older workflow revisions.
 concurrency:
-  group: us-top50-${{ github.ref }}
+  group: us-top36-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -48,12 +48,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Discover, strictly verify and rank 50 diverse US egress nodes
+      - name: Discover, strictly verify and rank 36 balanced US egress nodes
         shell: bash
         run: |
           set -uo pipefail
           mkdir -p output/attempts
-          echo "========== SINGLE PASS: US TOP 50 =========="
+          echo "========== SINGLE PASS: US TOP 36 =========="
           set +e
           python -u tools/us_top100.py 2>&1 | tee output/attempts/round-1.log
           rc=${PIPESTATUS[0]}
@@ -63,7 +63,7 @@ jobs:
           fi
           finished_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           {
-            echo "target_count=50"
+            echo "target_count=36"
             echo "run_id=${GITHUB_RUN_ID}"
             echo "run_number=${GITHUB_RUN_NUMBER}"
             echo "exit_code=${rc}"
@@ -71,22 +71,22 @@ jobs:
           } | tee output/round-summary.txt
 
           # Keep an immutable, run-specific copy so later runs never replace it.
-          archive="output/history/us-top50-${GITHUB_RUN_ID}"
+          archive="output/history/us-top36-${GITHUB_RUN_ID}"
           mkdir -p "${archive}"
-          if [[ -f output/us_top50.yaml ]]; then
-            cp output/us_top50.yaml "${archive}/us-top50-${GITHUB_RUN_ID}.yaml"
+          if [[ -f output/us_top36.yaml ]]; then
+            cp output/us_top36.yaml "${archive}/us-top36-${GITHUB_RUN_ID}.yaml"
           fi
           if [[ -f output/report.json ]]; then
             cp output/report.json "${archive}/report-${GITHUB_RUN_ID}.json"
           fi
           cp output/round-summary.txt "${archive}/summary-${GITHUB_RUN_ID}.txt"
           cp output/attempts/round-1.log "${archive}/round-1-${GITHUB_RUN_ID}.log" 2>/dev/null || true
-          if [[ "${rc}" -eq 0 && -f output/us_top50.yaml ]]; then
+          if [[ "${rc}" -eq 0 && -f output/us_top36.yaml ]]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add output/us_top50.yaml
+            git add output/us_top36.yaml
             if ! git diff --cached --quiet; then
-              git commit -m "Publish latest verified US Top 50 subscription"
+              git commit -m "Publish latest verified US Top 36 subscription"
               git push
             fi
           fi
@@ -96,10 +96,10 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: us-top50-run-${{ github.run_id }}
+          name: us-top36-run-${{ github.run_id }}
           path: |
             output/history/
-            output/us_top50.yaml
+            output/us_top36.yaml
             output/report.json
             output/round-summary.txt
             output/attempts/
