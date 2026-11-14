@@ -286,6 +286,8 @@ def clean_proxy(proxy, rank):
     stability = float(item.pop("_stability", 0))
     score = float(item.pop("_score", 0))
     item.pop("sub", None)
+    item.pop("_egress_ip", None)
+    item.pop("_geo_method", None)
     item.pop("liveness", None)
     item.pop("cdn", None)
     item.pop("renamed", None)
