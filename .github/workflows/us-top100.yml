@@ -73,7 +73,7 @@ jobs:
         with:
           name: us-top20-${{ github.run_number }}
           path: |
-            output/us_top100.yaml
+            output/us_top20.yaml
             output/report.json
             output/round-summary.txt
             output/attempts/
