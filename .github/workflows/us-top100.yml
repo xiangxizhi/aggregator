@@ -1,4 +1,4 @@
-name: US Top 36 Proxies
+name: US Italy Japan Top 60 Proxies
 
 on:
   push:
@@ -63,7 +63,7 @@ jobs:
           fi
           finished_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           {
-            echo "target_count=36"
+            echo "target_count=60"
             echo "run_id=${GITHUB_RUN_ID}"
             echo "run_number=${GITHUB_RUN_NUMBER}"
             echo "exit_code=${rc}"
@@ -72,7 +72,7 @@ jobs:
 
           # Keep every run/attempt in a separate immutable directory and file.
           archive="output/history/run-${GITHUB_RUN_ID}-attempt-${GITHUB_RUN_ATTEMPT}"
-          subscription="output/history/us_top36_run_${GITHUB_RUN_ID}_attempt_${GITHUB_RUN_ATTEMPT}.yaml"
+          subscription="output/history/tri_country_top60_run_${GITHUB_RUN_ID}_attempt_${GITHUB_RUN_ATTEMPT}.yaml"
           mkdir -p "${archive}"
           if [[ -f output/report.json ]]; then
             cp output/report.json "${archive}/report-${GITHUB_RUN_ID}-attempt-${GITHUB_RUN_ATTEMPT}.json"
@@ -81,12 +81,12 @@ jobs:
           cp output/attempts/round-1.log "${archive}/round-1-${GITHUB_RUN_ID}-attempt-${GITHUB_RUN_ATTEMPT}.log" 2>/dev/null || true
           if [[ "${rc}" -eq 0 && -f "${subscription}" ]]; then
             # Stable phone subscription URL: update only after a fully successful run.
-            cp "${subscription}" output/us_top36_latest.yaml
+            cp "${subscription}" output/tri_country_top60_latest.yaml
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add "${subscription}" "${archive}" output/us_top36_latest.yaml
+            git add "${subscription}" "${archive}" output/tri_country_top60_latest.yaml
             if ! git diff --cached --quiet; then
-              git commit -m "Archive verified US Top 36 run ${GITHUB_RUN_ID} attempt ${GITHUB_RUN_ATTEMPT}"
+              git commit -m "Archive verified US Italy Japan Top 60 run ${GITHUB_RUN_ID} attempt ${GITHUB_RUN_ATTEMPT}"
               git push
             fi
           fi
@@ -96,10 +96,10 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: us-top36-run-${{ github.run_id }}
+          name: tri-country-top60-run-${{ github.run_id }}
           path: |
             output/history/run-${{ github.run_id }}-attempt-${{ github.run_attempt }}/
-            output/history/us_top36_run_${{ github.run_id }}_attempt_${{ github.run_attempt }}.yaml
+            output/history/tri_country_top60_run_${{ github.run_id }}_attempt_${{ github.run_attempt }}.yaml
             output/report.json
             output/round-summary.txt
             output/attempts/
