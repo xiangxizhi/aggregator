@@ -47,6 +47,14 @@ def chunks(items, size):
         yield items[start : start + size]
 
 
+def protocol_counts(nodes):
+    counts = {}
+    for node in nodes or []:
+        kind = str(node.get("type", "unknown") if isinstance(node, dict) else "invalid").lower()
+        counts[kind] = counts.get(kind, 0) + 1
+    return dict(sorted(counts.items()))
+
+
 def run_alive_check(nodes, clash_bin):
     alive = []
     for index, batch in enumerate(chunks(nodes, BATCH_SIZE), 1):
@@ -144,6 +152,7 @@ def _geo_api_probe(proxy, port, reader=None):
 
 def locate_us(nodes, reader=None):
     us_nodes, country_confirmed = [], 0
+    confirmed_by_type, us_by_type = {}, {}
     for index, batch in enumerate(chunks(nodes, BATCH_SIZE), 1):
         print(f"[geoip-egress] batch {index}, nodes={len(batch)}", flush=True)
         results = location.batch_query(
@@ -160,12 +169,19 @@ def locate_us(nodes, reader=None):
             country = (item.result.country or "").strip().upper()
             if country:
                 country_confirmed += 1
+                kind = str(item.proxy.get("type", "unknown")).lower()
+                confirmed_by_type[kind] = confirmed_by_type.get(kind, 0) + 1
             if country in ("美国", "US"):
                 proxy = item.proxy
+                kind = str(proxy.get("type", "unknown")).lower()
+                us_by_type[kind] = us_by_type.get(kind, 0) + 1
                 proxy["name"] = proxy.pop("_original_name", proxy.get("name", "US node"))
                 us_nodes.append(proxy)
     print(f"[geoip-egress] country confirmed={country_confirmed}; US={len(us_nodes)}", flush=True)
-    return us_nodes, country_confirmed
+    return us_nodes, country_confirmed, {
+        "country_confirmed_by_type": dict(sorted(confirmed_by_type.items())),
+        "us_confirmed_by_type": dict(sorted(us_by_type.items())),
+    }
 
 
 def speed_probe(proxy, port):
@@ -367,6 +383,8 @@ def collect_public_feeds(groups):
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
+    # Never let a failed/short run accidentally archive or publish yesterday's file.
+    (OUT / "us_top50.yaml").unlink(missing_ok=True)
     report = {
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "runner": "GitHub Actions ubuntu-latest",
@@ -378,7 +396,9 @@ def main():
         "us_egress_confirmed": 0,
         "speed_measured": 0,
         "final_count": 0,
-        "target_count": 50,
+        "target_count": 20,
+        "protocol_counts": {},
+        "stage_counts": {},
         "notes": [
             "Country is checked through each proxy's actual egress connection, not the node label or origin server IP.",
             "Cloud runner measurements are not the user's phone-network measurements.",
@@ -466,18 +486,37 @@ def main():
             func=workflow.executewrapper,
             tasks=tasks,
         ) or []
-        parsed = []
+        parsed_all = []
         report["task_parse_counts"] = []
         for result in task_results:
-            count = len(result[1]) if result and len(result) >= 2 and result[1] else 0
-            report["task_parse_counts"].append({"task_id": result[0] if result else -1, "parsed": count})
-            if result and len(result) >= 2 and result[1]:
-                parsed.extend(result[1])
-        parsed = [
-            p for p in parsed
-            if isinstance(p, dict) and str(p.get("type", "")).lower() in ALLOWED_TYPES
-            and p.get("server") and p.get("port")
-        ]
+            task_id = result[0] if result else -1
+            task_nodes = result[1] if result and len(result) >= 2 and result[1] else []
+            report["task_parse_counts"].append({
+                "task_id": task_id,
+                "parsed": len(task_nodes),
+                "protocols": protocol_counts(task_nodes),
+            })
+            parsed_all.extend(task_nodes)
+        report["parsed_all_by_type"] = protocol_counts(parsed_all)
+        rejected = {"not_dict": 0, "unsupported_type": 0, "missing_server": 0, "missing_port": 0}
+        parsed = []
+        for p in parsed_all:
+            if not isinstance(p, dict):
+                rejected["not_dict"] += 1
+                continue
+            kind = str(p.get("type", "")).lower()
+            if kind not in ALLOWED_TYPES:
+                rejected["unsupported_type"] += 1
+                continue
+            if not p.get("server"):
+                rejected["missing_server"] += 1
+                continue
+            if not p.get("port"):
+                rejected["missing_port"] += 1
+                continue
+            parsed.append(p)
+        report["parse_rejections"] = rejected
+        report["parsed_supported_by_type"] = protocol_counts(parsed)
         unique = {}
         for p in parsed:
             key = (
@@ -491,6 +530,8 @@ def main():
         candidates = list(unique.values())
         report["raw_candidates"] = len(parsed)
         report["parsed_supported"] = len(candidates)
+        report["protocol_counts"]["parsed_unique"] = protocol_counts(candidates)
+        report["stage_counts"]["parsed_unique"] = len(candidates)
         if len(candidates) > MAX_CANDIDATES:
             random.Random(20261113).shuffle(candidates)
             candidates = candidates[:MAX_CANDIDATES]
@@ -500,6 +541,8 @@ def main():
 
         alive = run_alive_check(candidates, clash_bin)
         report["alive"] = len(alive)
+        report["protocol_counts"]["alive"] = protocol_counts(alive)
+        report["stage_counts"]["alive"] = len(alive)
         print(f"[alive] passed={len(alive)}", flush=True)
         if not alive:
             raise RuntimeError("No node passed Mihomo connectivity tests")
@@ -523,12 +566,16 @@ def main():
         except Exception as exc:
             print(f"[geoip] optional MMDB unavailable; using online APIs: {exc}", flush=True)
         try:
-            us_nodes, confirmed = locate_us(alive, reader)
+            us_nodes, confirmed, geo_protocol_stats = locate_us(alive, reader)
         finally:
             if reader:
                 reader.close()
         report["egress_country_confirmed"] = confirmed
         report["us_egress_confirmed"] = len(us_nodes)
+        report["geo_protocol_counts"] = geo_protocol_stats
+        report["protocol_counts"]["us_egress_confirmed"] = protocol_counts(us_nodes)
+        report["stage_counts"]["country_confirmed"] = confirmed
+        report["stage_counts"]["us_egress_confirmed"] = len(us_nodes)
         report["geoip_method"] = "at least two independent online APIs must agree on country and exact egress IP"
         print(f"[geoip-egress] US confirmed={len(us_nodes)}", flush=True)
         if not us_nodes:
@@ -536,6 +583,8 @@ def main():
 
         measured = measure_and_rank(us_nodes)
         report["speed_measured"] = len(measured)
+        report["protocol_counts"]["speed_measured"] = protocol_counts(measured)
+        report["stage_counts"]["speed_measured"] = len(measured)
         diverse, seen_endpoints, seen_egress_ips = [], set(), set()
         for proxy in measured:
             endpoint = (str(proxy.get("server", "")).lower(), str(proxy.get("port", "")))
@@ -550,7 +599,9 @@ def main():
             diverse.append(proxy)
         report["unique_server_endpoints_after_dedup"] = len(seen_endpoints)
         report["unique_us_egress_ips_after_dedup"] = len(seen_egress_ips)
-        top = diverse[:50]
+        report["protocol_counts"]["after_dedup"] = protocol_counts(diverse)
+        report["stage_counts"]["after_dedup"] = len(diverse)
+        top = diverse[:20]
         if not top:
             raise RuntimeError("No US node completed both latency and download tests")
 
@@ -569,9 +620,9 @@ def main():
             "ipv6": False,
             "proxies": clean_nodes,
             "proxy-groups": [
-                {"name": "美国优选50", "type": "select", "proxies": names},
+                {"name": "美国优选20", "type": "select", "proxies": names},
                 {
-                    "name": "美国自动测速50",
+                    "name": "美国自动测速20",
                     "type": "url-test",
                     "proxies": names,
                     "url": "https://www.gstatic.com/generate_204",
@@ -579,15 +630,24 @@ def main():
                     "tolerance": 100,
                 },
             ],
-            "rules": ["MATCH,美国优选50"],
+            "rules": ["MATCH,美国优选20"],
         }
         subscription_path = OUT / "us_top50.yaml"
         with subscription_path.open("w", encoding="utf-8") as handle:
             yaml.dump(config, handle, Dumper=PlainSafeDumper, allow_unicode=True, sort_keys=False)
 
         report["final_count"] = len(clean_nodes)
+        report["protocol_counts"]["final"] = protocol_counts(clean_nodes)
+        report["stage_counts"]["final"] = len(clean_nodes)
         report["ranking"] = ranking
-        report["status"] = "success"
+        if len(clean_nodes) < report["target_count"]:
+            report["status"] = "insufficient"
+            report["error"] = (
+                f"Only {len(clean_nodes)} verified unique US nodes; "
+                f"{report['target_count']} required. Previous subscription will not be published."
+            )
+        else:
+            report["status"] = "success"
         report["test_limits"] = (
             "Latency is the median of up to three HTTPS 204 requests. Download speed is the median of "
             "up to two 512 KiB Cloudflare downloads. These are GitHub runner results, not handset results."
