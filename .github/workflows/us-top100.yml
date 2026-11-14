@@ -70,23 +70,21 @@ jobs:
             echo "finished_utc=${finished_utc}"
           } | tee output/round-summary.txt
 
-          # Keep an immutable, run-specific copy so later runs never replace it.
-          archive="output/history/us-top36-${GITHUB_RUN_ID}"
+          # Keep every run/attempt in a separate immutable directory and file.
+          archive="output/history/run-${GITHUB_RUN_ID}-attempt-${GITHUB_RUN_ATTEMPT}"
+          subscription="output/history/us_top36_run_${GITHUB_RUN_ID}_attempt_${GITHUB_RUN_ATTEMPT}.yaml"
           mkdir -p "${archive}"
-          if [[ -f output/us_top36.yaml ]]; then
-            cp output/us_top36.yaml "${archive}/us-top36-${GITHUB_RUN_ID}.yaml"
-          fi
           if [[ -f output/report.json ]]; then
-            cp output/report.json "${archive}/report-${GITHUB_RUN_ID}.json"
+            cp output/report.json "${archive}/report-${GITHUB_RUN_ID}-attempt-${GITHUB_RUN_ATTEMPT}.json"
           fi
-          cp output/round-summary.txt "${archive}/summary-${GITHUB_RUN_ID}.txt"
-          cp output/attempts/round-1.log "${archive}/round-1-${GITHUB_RUN_ID}.log" 2>/dev/null || true
-          if [[ "${rc}" -eq 0 && -f output/us_top36.yaml ]]; then
+          cp output/round-summary.txt "${archive}/summary-${GITHUB_RUN_ID}-attempt-${GITHUB_RUN_ATTEMPT}.txt"
+          cp output/attempts/round-1.log "${archive}/round-1-${GITHUB_RUN_ID}-attempt-${GITHUB_RUN_ATTEMPT}.log" 2>/dev/null || true
+          if [[ "${rc}" -eq 0 && -f "${subscription}" ]]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add output/us_top36.yaml
+            git add "${subscription}" "${archive}"
             if ! git diff --cached --quiet; then
-              git commit -m "Publish latest verified US Top 36 subscription"
+              git commit -m "Archive verified US Top 36 run ${GITHUB_RUN_ID} attempt ${GITHUB_RUN_ATTEMPT}"
               git push
             fi
           fi
@@ -98,8 +96,8 @@ jobs:
         with:
           name: us-top36-run-${{ github.run_id }}
           path: |
-            output/history/
-            output/us_top36.yaml
+            output/history/run-${{ github.run_id }}-attempt-${{ github.run_attempt }}/
+            output/history/us_top36_run_${{ github.run_id }}_attempt_${{ github.run_attempt }}.yaml
             output/report.json
             output/round-summary.txt
             output/attempts/
