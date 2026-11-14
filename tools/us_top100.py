@@ -125,8 +125,7 @@ def _geo_api_probe(proxy, port, reader=None):
         except Exception as exc:
             print(f"[geoip-api] {name} {url} failed: {exc}", flush=True)
 
-    # Prefer a two-provider agreement. If only one provider is reachable, retain
-    # its result rather than falsely rejecting every node due to API outages.
+    # Require independent providers to agree on both country and exact egress IP.
     if len(votes) < 2 or len(observed_ips) < 2:
         return ProxyQueryResult(proxy=proxy, result=ProxyInfo(name=name), success=False)
     counts = {code: votes.count(code) for code in set(votes)}
@@ -381,7 +380,7 @@ def main():
         "notes": [
             "Country is checked through each proxy's actual egress connection, not the node label or origin server IP.",
             "Cloud runner measurements are not the user's phone-network measurements.",
-            "Download speed uses two small Cloudflare test downloads per confirmed US node.",
+            "Download speed uses two 512 KiB Cloudflare test downloads per confirmed US node.",
         ],
     }
     try:
@@ -578,7 +577,7 @@ def main():
                     "tolerance": 100,
                 },
             ],
-            "rules": ["MATCH,美国优选"],
+            "rules": ["MATCH,美国优选50"],
         }
         subscription_path = OUT / "us_top50.yaml"
         with subscription_path.open("w", encoding="utf-8") as handle:
@@ -589,7 +588,7 @@ def main():
         report["status"] = "success"
         report["test_limits"] = (
             "Latency is the median of up to three HTTPS 204 requests. Download speed is the median of "
-            "up to two 256 KiB Cloudflare downloads. These are GitHub runner results, not handset results."
+            "up to two 512 KiB Cloudflare downloads. These are GitHub runner results, not handset results."
         )
     except Exception as exc:
         report["status"] = "incomplete"
