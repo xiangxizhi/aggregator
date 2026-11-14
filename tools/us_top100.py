@@ -32,7 +32,7 @@ from crawl import engine as crawl_engine
 from geoip2 import database
 from location import ProxyInfo, ProxyQueryResult
 
-ALLOWED_TYPES = {"http", "ss", "trojan", "vless"}  # Keep the four protocols prioritized for handset compatibility
+ALLOWED_TYPES = {"http", "ss", "trojan", "vless", "vmess", "hysteria", "hysteria2", "anytls"}  # Exclude only SSR, Snell, TUIC and SOCKS5
 MAX_CANDIDATES = 10000  # Public feeds plus configured crawlers; strict successful Mihomo checks only
 BATCH_SIZE = 80
 SPEED_BYTES = 524288
@@ -62,7 +62,7 @@ def select_protocol_diverse(nodes, target=36, minimum_per_protocol=3):
     candidates. Then repeatedly select from the currently least-represented
     protocol, using the measured global score to break ties.
     """
-    priority = ["http", "ss", "trojan", "vless"]
+    priority = ["http", "ss", "trojan", "vless", "vmess", "hysteria2", "hysteria", "anytls"]
     buckets = {}
     for node in nodes:
         kind = str(node.get("type", "unknown")).lower()
