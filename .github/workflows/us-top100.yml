@@ -1,10 +1,11 @@
-name: US Top 20 Proxies
+name: US Top 50 Proxies
 
 on:
   push:
     branches: [main]
     paths:
       - 'tools/us_top100.py'
+      - 'subscribe/clash.py'
       - '.github/workflows/us-top100.yml'
   workflow_dispatch:
   schedule:
@@ -21,7 +22,7 @@ permissions:
 
 # A new Top-20 run must not wait behind the previous five-hour job.
 concurrency:
-  group: us-top20-${{ github.ref }}
+  group: us-top50-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -47,12 +48,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Discover, verify and rank up to 20 US egress nodes
+      - name: Discover, strictly verify and rank up to 50 diverse US egress nodes
         shell: bash
         run: |
           set -uo pipefail
           mkdir -p output/attempts
-          echo "========== SINGLE PASS: US TOP 20 =========="
+          echo "========== SINGLE PASS: US TOP 50 =========="
           set +e
           python -u tools/us_top100.py 2>&1 | tee output/attempts/round-1.log
           rc=${PIPESTATUS[0]}
@@ -62,7 +63,7 @@ jobs:
           fi
           finished_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           {
-            echo "target_count=20"
+            echo "target_count=50"
             echo "run_id=${GITHUB_RUN_ID}"
             echo "run_number=${GITHUB_RUN_NUMBER}"
             echo "exit_code=${rc}"
@@ -70,10 +71,10 @@ jobs:
           } | tee output/round-summary.txt
 
           # Keep an immutable, run-specific copy so later runs never replace it.
-          archive="output/history/us-top20-${GITHUB_RUN_ID}"
+          archive="output/history/us-top50-${GITHUB_RUN_ID}"
           mkdir -p "${archive}"
-          if [[ -f output/us_top20.yaml ]]; then
-            cp output/us_top20.yaml "${archive}/us-top20-${GITHUB_RUN_ID}.yaml"
+          if [[ -f output/us_top50.yaml ]]; then
+            cp output/us_top20.yaml "${archive}/us-top50-${GITHUB_RUN_ID}.yaml"
           fi
           if [[ -f output/report.json ]]; then
             cp output/report.json "${archive}/report-${GITHUB_RUN_ID}.json"
@@ -86,7 +87,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: us-top20-run-${{ github.run_id }}
+          name: us-top50-run-${{ github.run_id }}
           path: |
             output/history/
             output/us_top20.yaml
