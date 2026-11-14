@@ -20,9 +20,9 @@ env:
 permissions:
   contents: write
 
-# Keep Top-50 runs isolated from older workflow revisions.
+# Keep each three-country run isolated.
 concurrency:
-  group: us-top36-${{ github.ref }}
+  group: tri-country-top60-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -48,12 +48,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Discover, strictly verify and rank 36 balanced US egress nodes
+      - name: Discover, verify and rank up to 20 nodes each from US, Italy and Japan
         shell: bash
         run: |
           set -uo pipefail
           mkdir -p output/attempts
-          echo "========== SINGLE PASS: US TOP 36 =========="
+          echo "========== SINGLE PASS: US / ITALY / JAPAN TOP 60 =========="
           set +e
           python -u tools/us_top100.py 2>&1 | tee output/attempts/round-1.log
           rc=${PIPESTATUS[0]}
