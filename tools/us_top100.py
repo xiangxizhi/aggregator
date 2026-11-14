@@ -462,6 +462,38 @@ def collect_public_feeds(groups):
     except Exception as exc:
         print(f"[public-feeds] Au1rxx fetch/parse failed: {exc}", flush=True)
 
+    # Additional independently maintained public feeds. Country labels are never trusted.
+    # Every candidate still passes Mihomo, actual egress-country and speed checks.
+    extra_feeds = [
+        ("mfuu_freeproxies", "https://raw.githubusercontent.com/mfuu/FreeProxies/master/sub.yaml"),
+        ("share_daily_nodes", "https://raw.githubusercontent.com/share-daily/node/main/clash.yaml"),
+        ("free_nodes_735754647", "https://735754647.github.io/Free-Nodes/clash.yaml"),
+        ("nodesradar", "https://radarhub.top/clash.yaml"),
+    ]
+    for feed_name, feed_url in extra_feeds:
+        try:
+            raw = utils.http_get(url=feed_url, retry=2, timeout=60)
+            data = yaml.safe_load(raw) if raw else {}
+            proxies = data.get("proxies", []) if isinstance(data, dict) else []
+            proxies = [
+                item for item in proxies
+                if isinstance(item, dict)
+                and str(item.get("type", "")).lower() in ALLOWED_TYPES
+                and item.get("server") and item.get("port")
+            ]
+            stats[feed_name] = len(proxies)
+            if proxies:
+                sites.append(SiteConfig(
+                    name=f"public-{feed_name}",
+                    nodes=NodeInput(proxies=proxies),
+                    push_to=push_to,
+                    origin="PUBLIC_FEED",
+                ))
+            print(f"[public-feeds] {feed_name}: imported {len(proxies)} YAML proxies", flush=True)
+        except Exception as exc:
+            stats[feed_name] = 0
+            print(f"[public-feeds] {feed_name} fetch/parse failed: {exc}", flush=True)
+
     print(f"[public-feeds] imported={stats}", flush=True)
     return sites, stats
 
@@ -472,7 +504,7 @@ def main():
     report = {
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "runner": "GitHub Actions ubuntu-latest",
-        "sources": ["Telegram", "Yandex Search", "GitHub Code/Issues", "Pawdroid/Free-servers", "Au1rxx/free-vpn-subscriptions (US shard, re-verified)"],
+        "sources": ["Telegram", "Yandex Search", "GitHub Code/Issues", "Pawdroid/Free-servers", "Au1rxx/free-vpn-subscriptions (US shard, re-verified)", "mfuu/FreeProxies", "share-daily/node", "735754647/Free-Nodes", "nodesradar/nodesradar-en"],
         "raw_candidates": 0,
         "parsed_supported": 0,
         "alive": 0,
@@ -719,7 +751,7 @@ def main():
                     "tolerance": 100,
                 },
             ],
-            "rules": ["MATCH,美国优选20"],
+            "rules": ["MATCH,美国优选50"],
         }
         subscription_path = OUT / "us_top50.yaml"
         with subscription_path.open("w", encoding="utf-8") as handle:
