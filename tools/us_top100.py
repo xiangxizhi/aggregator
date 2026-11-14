@@ -33,9 +33,9 @@ from geoip2 import database
 from location import ProxyInfo, ProxyQueryResult
 
 ALLOWED_TYPES = {"vmess", "vless", "trojan", "ss"}
-MAX_CANDIDATES = 5000  # Public feeds plus configured crawlers; strict successful Mihomo checks only
+MAX_CANDIDATES = 10000  # Public feeds plus configured crawlers; strict successful Mihomo checks only
 BATCH_SIZE = 80
-SPEED_BYTES = 262144
+SPEED_BYTES = 524288
 OUT = ROOT / "output"
 WORKSPACE = ROOT / "clash"
 TEST_URL = "https://www.gstatic.com/generate_204"
@@ -99,6 +99,7 @@ def _geo_api_probe(proxy, port, reader=None):
     name = str(proxy.get("name", ""))
     votes = []
     ip_seen = ""
+    observed_ips = []
     # Each request is made through this node's Mihomo listener, never from the runner.
     endpoints = [
         ("https://ipwho.is/", "country_code"),
@@ -117,21 +118,24 @@ def _geo_api_probe(proxy, port, reader=None):
             code = _country_code(data.get(key))
             if code:
                 votes.append(code)
-                ip_seen = ip_seen or str(data.get("ip", ""))
+                observed_ip = str(data.get("ip", "")).strip()
+                if observed_ip:
+                    observed_ips.append(observed_ip)
+                    ip_seen = ip_seen or observed_ip
         except Exception as exc:
             print(f"[geoip-api] {name} {url} failed: {exc}", flush=True)
 
     # Prefer a two-provider agreement. If only one provider is reachable, retain
     # its result rather than falsely rejecting every node due to API outages.
-    if not votes:
+    if len(votes) < 2 or len(observed_ips) < 2:
         return ProxyQueryResult(proxy=proxy, result=ProxyInfo(name=name), success=False)
     counts = {code: votes.count(code) for code in set(votes)}
     country = max(counts, key=counts.get)
-    if counts[country] < 2 and len(votes) > 1:
+    if counts[country] < 2 or len(set(observed_ips)) != 1:
         return ProxyQueryResult(proxy=proxy, result=ProxyInfo(name=name), success=False)
     if ip_seen:
         proxy["_egress_ip"] = ip_seen
-    proxy["_geo_method"] = "online-api-consensus" if counts[country] >= 2 else "single-online-api"
+    proxy["_geo_method"] = "two-or-more-api-country-and-ip-consensus"
     return ProxyQueryResult(
         proxy=proxy,
         result=ProxyInfo(name=name, country=country),
@@ -203,7 +207,7 @@ def speed_probe(proxy, port):
     else:
         jitter = 1.0
     proxy["_stability"] = (len(latency_samples) / 3.0) / (1.0 + jitter)
-    ok = len(latency_samples) >= 2 and len(speed_samples) >= 1
+    ok = len(latency_samples) >= 3 and len(speed_samples) >= 2
     return ProxyQueryResult(
         proxy=proxy,
         result=ProxyInfo(name=str(proxy.get("name", ""))),
@@ -373,7 +377,7 @@ def main():
         "us_egress_confirmed": 0,
         "speed_measured": 0,
         "final_count": 0,
-        "target_count": 20,
+        "target_count": 50,
         "notes": [
             "Country is checked through each proxy's actual egress connection, not the node label or origin server IP.",
             "Cloud runner measurements are not the user's phone-network measurements.",
@@ -524,14 +528,28 @@ def main():
                 reader.close()
         report["egress_country_confirmed"] = confirmed
         report["us_egress_confirmed"] = len(us_nodes)
-        report["geoip_method"] = "independent online APIs through proxy; 2-provider agreement preferred; single provider accepted only when it is the sole responder"
+        report["geoip_method"] = "at least two independent online APIs must agree on country and exact egress IP"
         print(f"[geoip-egress] US confirmed={len(us_nodes)}", flush=True)
         if not us_nodes:
             raise RuntimeError("No live node had a verifiably US egress IP")
 
         measured = measure_and_rank(us_nodes)
         report["speed_measured"] = len(measured)
-        top = measured[:20]
+        diverse, seen_endpoints, seen_egress_ips = [], set(), set()
+        for proxy in measured:
+            endpoint = (str(proxy.get("server", "")).lower(), str(proxy.get("port", "")))
+            egress_ip = str(proxy.get("_egress_ip", "")).strip()
+            if not endpoint[0] or not endpoint[1] or endpoint in seen_endpoints:
+                continue
+            if egress_ip and egress_ip in seen_egress_ips:
+                continue
+            seen_endpoints.add(endpoint)
+            if egress_ip:
+                seen_egress_ips.add(egress_ip)
+            diverse.append(proxy)
+        report["unique_server_endpoints_after_dedup"] = len(seen_endpoints)
+        report["unique_us_egress_ips_after_dedup"] = len(seen_egress_ips)
+        top = diverse[:50]
         if not top:
             raise RuntimeError("No US node completed both latency and download tests")
 
@@ -550,9 +568,9 @@ def main():
             "ipv6": False,
             "proxies": clean_nodes,
             "proxy-groups": [
-                {"name": "美国优选", "type": "select", "proxies": names},
+                {"name": "美国优选50", "type": "select", "proxies": names},
                 {
-                    "name": "美国自动测速",
+                    "name": "美国自动测速50",
                     "type": "url-test",
                     "proxies": names,
                     "url": "https://www.gstatic.com/generate_204",
@@ -562,7 +580,7 @@ def main():
             ],
             "rules": ["MATCH,美国优选"],
         }
-        subscription_path = OUT / "us_top20.yaml"
+        subscription_path = OUT / "us_top50.yaml"
         with subscription_path.open("w", encoding="utf-8") as handle:
             yaml.dump(config, handle, Dumper=PlainSafeDumper, allow_unicode=True, sort_keys=False)
 
