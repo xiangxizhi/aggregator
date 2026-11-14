@@ -80,9 +80,11 @@ jobs:
           cp output/round-summary.txt "${archive}/summary-${GITHUB_RUN_ID}-attempt-${GITHUB_RUN_ATTEMPT}.txt"
           cp output/attempts/round-1.log "${archive}/round-1-${GITHUB_RUN_ID}-attempt-${GITHUB_RUN_ATTEMPT}.log" 2>/dev/null || true
           if [[ "${rc}" -eq 0 && -f "${subscription}" ]]; then
+            # Stable phone subscription URL: update only after a fully successful run.
+            cp "${subscription}" output/us_top36_latest.yaml
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add "${subscription}" "${archive}"
+            git add "${subscription}" "${archive}" output/us_top36_latest.yaml
             if ! git diff --cached --quiet; then
               git commit -m "Archive verified US Top 36 run ${GITHUB_RUN_ID} attempt ${GITHUB_RUN_ATTEMPT}"
               git push
