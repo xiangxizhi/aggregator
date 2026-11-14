@@ -156,15 +156,27 @@ def exists(tasks: list[TaskConfig], task: TaskConfig) -> bool:
         return False
 
     found = False
+    # Direct public feeds (URI/proxy lists) have no subscription URL or domain.
+    # The old fallback compared only (domain, index), so every such feed used
+    # ("", -1) and silently discarded all but the first source.
+    task_has_direct = bool(task.nodes.uris or task.nodes.proxies)
+    task_subs = task.nodes.subscribe_list()
     for item in tasks:
-        left = task.nodes.subscribe_list()
+        item_has_direct = bool(item.nodes.uris or item.nodes.proxies)
+        left = task_subs
         right = item.nodes.subscribe_list()
-        if left:
-            if left == right:
-                found = True
+        if task_has_direct or item_has_direct:
+            if task_has_direct and item_has_direct:
+                found = (
+                    task.nodes.uris == item.nodes.uris
+                    and task.nodes.proxies == item.nodes.proxies
+                )
+            else:
+                found = False
+        elif left:
+            found = left == right
         else:
-            if task.domain == item.domain and task.index == item.index:
-                found = True
+            found = task.domain == item.domain and task.index == item.index
 
         if found:
             if not item.rename:
