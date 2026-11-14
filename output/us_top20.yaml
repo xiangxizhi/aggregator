@@ -1,0 +1,232 @@
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: warning
+ipv6: false
+proxies:
+- cipher: aes-128-gcm
+  name: US-001 | SHADOWSOCKS 006
+  password: shadowsocks
+  port: 443
+  server: 156.146.38.169
+  type: ss
+  udp: true
+  _egress_ip: 156.146.38.169
+  _geo_method: online-api-consensus
+- name: US-002 | TROJAN 040
+  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  port: 443
+  server: 216.152.155.54
+  skip-cert-verify: false
+  sni: learn.nextjobopportunityandclaimyouridealrole.com
+  type: trojan
+  udp: true
+  _egress_ip: 216.152.155.158
+  _geo_method: online-api-consensus
+- name: US-003 | TROJAN 012
+  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  port: 443
+  server: 216.152.155.54
+  skip-cert-verify: true
+  sni: 216.152.155.54
+  type: trojan
+  udp: true
+  _egress_ip: 216.152.155.158
+  _geo_method: online-api-consensus
+- cipher: aes-128-gcm
+  name: US-004 | SHADOWSOCKS 008
+  password: shadowsocks
+  port: 443
+  server: 156.146.38.170
+  type: ss
+  udp: true
+  _egress_ip: 156.146.38.170
+  _geo_method: online-api-consensus
+- cipher: aes-128-gcm
+  name: US-005 | SHADOWSOCKS 005
+  password: shadowsocks
+  port: 443
+  server: 156.146.38.167
+  type: ss
+  udp: true
+  _egress_ip: 156.146.38.167
+  _geo_method: online-api-consensus
+- name: US-006 | TROJAN 020
+  password: ae7eb4dwyaz25pxwgq59
+  port: 59689
+  server: 66.23.203.21
+  skip-cert-verify: true
+  sni: 66.23.203.21
+  type: trojan
+  udp: true
+  _egress_ip: 66.23.203.18
+  _geo_method: online-api-consensus
+- name: US-007 | TROJAN 017
+  password: ae7eb4dwyaz25pxwgq59
+  port: 59689
+  server: 66.23.203.21
+  skip-cert-verify: true
+  sni: ''
+  type: trojan
+  udp: true
+  _egress_ip: 66.23.203.18
+  _geo_method: online-api-consensus
+- name: US-008 | TROJAN 005
+  password: ae7eb4dwyaz25pxwgq59
+  port: 59689
+  server: 66.23.203.21
+  skip-cert-verify: true
+  sni: ''
+  type: trojan
+  udp: true
+  _egress_ip: 66.23.203.18
+  _geo_method: online-api-consensus
+- name: US-009 | TROJAN 015
+  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  port: 443
+  server: 216.152.155.131
+  skip-cert-verify: true
+  sni: ''
+  type: trojan
+  udp: true
+  _egress_ip: 216.152.155.158
+  _geo_method: online-api-consensus
+- cipher: aes-128-gcm
+  name: US-010 | SHADOWSOCKS 002
+  password: shadowsocks
+  port: 443
+  server: 156.146.38.168
+  type: ss
+  udp: true
+  _egress_ip: 156.146.38.168
+  _geo_method: online-api-consensus
+- name: US-011 | TROJAN 032
+  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  port: 443
+  server: 216.152.155.176
+  skip-cert-verify: true
+  sni: blog.nextjobopportunityandclaimyouridealrole.com
+  type: trojan
+  udp: true
+  _egress_ip: 216.152.155.158
+  _geo_method: online-api-consensus
+- cipher: aes-256-gcm
+  name: US-012 | SHADOWSOCKS 006
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  port: 19999
+  server: 185.230.230.18
+  type: ss
+  udp: true
+  _egress_ip: 208.240.25.130
+  _geo_method: online-api-consensus
+- name: US-013 | TROJAN 007
+  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  port: 443
+  server: 66.163.114.132
+  skip-cert-verify: true
+  sni: 66.163.114.132
+  type: trojan
+  udp: true
+  _egress_ip: 66.163.114.124
+  _geo_method: online-api-consensus
+- name: US-014 | TROJAN 028
+  password: nwilryafgkyvuxauc8pz
+  port: 50875
+  server: 69.164.240.85
+  skip-cert-verify: true
+  sni: 69.164.240.85
+  type: trojan
+  udp: true
+  _egress_ip: 174.138.187.118
+  _geo_method: online-api-consensus
+- name: US-015 | TROJAN 047
+  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  port: 443
+  server: 66.163.114.106
+  skip-cert-verify: true
+  sni: www.findconnectwithemployersandbuildprofessionalnetwork.com
+  type: trojan
+  udp: true
+  _egress_ip: 66.163.114.126
+  _geo_method: online-api-consensus
+- name: US-016 | TROJAN 022
+  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  port: 443
+  server: 66.163.114.114
+  skip-cert-verify: true
+  sni: learn.findconnectwithemployersandbuildprofessionalnetwork.com
+  type: trojan
+  udp: true
+  _egress_ip: 66.163.114.132
+  _geo_method: online-api-consensus
+- name: US-017 | TROJAN 013
+  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  port: 443
+  server: 66.163.114.45
+  skip-cert-verify: false
+  sni: cdn.findconnectwithemployersandbuildprofessionalnetwork.com
+  type: trojan
+  udp: true
+  _egress_ip: 66.163.114.245
+  _geo_method: online-api-consensus
+- name: US-018 | TROJAN 036
+  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  port: 443
+  server: 66.163.114.45
+  skip-cert-verify: true
+  sni: cdn.findconnectwithemployersandbuildprofessionalnetwork.com
+  type: trojan
+  udp: true
+  _egress_ip: 66.163.114.45
+  _geo_method: online-api-consensus
+- name: US-019 | TROJAN 005
+  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  port: 443
+  server: 170.101.101.53
+  skip-cert-verify: false
+  sni: www.explorecreativejobsandenhanceyourcareerportfolio.com
+  type: trojan
+  udp: true
+  _egress_ip: 170.101.101.112
+  _geo_method: online-api-consensus
+- cipher: aes-256-gcm
+  name: US-020 | SHADOWSOCKS 013
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  port: 19999
+  server: 45.86.51.18
+  type: ss
+  udp: true
+  _egress_ip: 208.240.25.232
+  _geo_method: online-api-consensus
+proxy-groups:
+- name: 美国优选
+  type: select
+  proxies: &id001
+  - US-001 | SHADOWSOCKS 006
+  - US-002 | TROJAN 040
+  - US-003 | TROJAN 012
+  - US-004 | SHADOWSOCKS 008
+  - US-005 | SHADOWSOCKS 005
+  - US-006 | TROJAN 020
+  - US-007 | TROJAN 017
+  - US-008 | TROJAN 005
+  - US-009 | TROJAN 015
+  - US-010 | SHADOWSOCKS 002
+  - US-011 | TROJAN 032
+  - US-012 | SHADOWSOCKS 006
+  - US-013 | TROJAN 007
+  - US-014 | TROJAN 028
+  - US-015 | TROJAN 047
+  - US-016 | TROJAN 022
+  - US-017 | TROJAN 013
+  - US-018 | TROJAN 036
+  - US-019 | TROJAN 005
+  - US-020 | SHADOWSOCKS 013
+- name: 美国自动测速
+  type: url-test
+  proxies: *id001
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+rules:
+- MATCH,美国优选
