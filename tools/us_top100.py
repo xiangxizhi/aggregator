@@ -55,12 +55,12 @@ def protocol_counts(nodes):
     return dict(sorted(counts.items()))
 
 
-def select_protocol_diverse(nodes, target=20, minimum_per_protocol=3):
-    """Reserve a small quota for each available protocol before global score fill.
+def select_protocol_diverse(nodes, target=50, minimum_per_protocol=3):
+    """Reserve three slots for every protocol with at least three validated nodes.
 
-    With a fixed target of 20, it is mathematically impossible to reserve three
-    nodes for more than six protocols. Prefer protocols known to work in the
-    user's Clash Mi tests, then fill remaining slots by measured score.
+    With a target of 50, all 12 supported protocols can receive a three-node
+    quota when enough candidates pass the exported-config compatibility test.
+    Remaining slots are filled by measured score.
     """
     priority = [
         "http", "hysteria", "hysteria2", "tuic", "anytls", "socks5",
@@ -299,6 +299,129 @@ def measure_and_rank(nodes):
         )
     )
     return measured
+
+
+def validate_exported_candidates(nodes, clash_bin):
+    """Re-test cleaned, export-shaped proxies through Mihomo before publishing.
+
+    This catches parser/serializer and outbound-field issues that can be hidden
+    when testing the raw crawler objects. A failed batch is split recursively
+    so one malformed node cannot invalidate otherwise usable candidates.
+    """
+    valid = []
+    tested_by_type, passed_by_type, rejected_by_type = {}, {}, {}
+    test_counter = 0
+
+    def test_batch(batch):
+        nonlocal test_counter
+        if not batch:
+            return
+        test_counter += 1
+        label = f"export-check-{test_counter:03d}"
+        test_proxies = []
+        original_by_name = {}
+        for original in batch:
+            test_proxy, _ = clean_proxy(original, len(test_proxies) + 1)
+            test_proxy["name"] = f"EXPORT-{test_counter:03d}-{len(test_proxies) + 1:03d}"
+            test_proxies.append(test_proxy)
+            original_by_name[test_proxy["name"]] = original
+
+        names = [item["name"] for item in test_proxies]
+        test_config = {
+            "mixed-port": 7890,
+            "external-controller": clash.EXTERNAL_CONTROLLER,
+            "allow-lan": False,
+            "mode": "rule",
+            "log-level": "warning",
+            "ipv6": False,
+            "proxies": test_proxies,
+            "proxy-groups": [
+                {"name": "EXPORT-CHECK", "type": "select", "proxies": names},
+            ],
+            "rules": ["MATCH,EXPORT-CHECK"],
+        }
+        config_path = WORKSPACE / f"{label}.yaml"
+        with config_path.open("w", encoding="utf-8") as handle:
+            yaml.dump(
+                test_config, handle, Dumper=PlainSafeDumper,
+                allow_unicode=True, sort_keys=False,
+            )
+
+        binpath = WORKSPACE / clash_bin
+        syntax = subprocess.run(
+            [str(binpath), "-t", "-d", str(WORKSPACE), "-f", str(config_path)],
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            text=True, timeout=35,
+        )
+        if syntax.returncode != 0:
+            if len(batch) > 1:
+                middle = len(batch) // 2
+                test_batch(batch[:middle])
+                test_batch(batch[middle:])
+            else:
+                item = batch[0]
+                kind = str(item.get("type", "unknown")).lower()
+                tested_by_type[kind] = tested_by_type.get(kind, 0) + 1
+                rejected_by_type[kind] = rejected_by_type.get(kind, 0) + 1
+                print(
+                    f"[export-check] rejected invalid exported config: "
+                    f"type={kind}, name={item.get('name', '')}, "
+                    f"detail={syntax.stdout[-500:]}",
+                    flush=True,
+                )
+            return
+
+        process = subprocess.Popen(
+            [str(binpath), "-d", str(WORKSPACE), "-f", str(config_path)],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        )
+        try:
+            time.sleep(6)
+            params = [
+                [item, clash.EXTERNAL_CONTROLLER, 15000, TEST_URL, 15000, False]
+                for item in test_proxies
+            ]
+            masks = utils.multi_thread_run(
+                func=clash.check,
+                tasks=params,
+                num_threads=min(16, max(1, len(params))),
+                show_progress=False,
+                description="Re-testing cleaned exported proxies",
+            ) or []
+            for index, original in enumerate(batch):
+                kind = str(original.get("type", "unknown")).lower()
+                tested_by_type[kind] = tested_by_type.get(kind, 0) + 1
+                passed = index < len(masks) and bool(masks[index])
+                if passed:
+                    valid.append(original)
+                    passed_by_type[kind] = passed_by_type.get(kind, 0) + 1
+                else:
+                    rejected_by_type[kind] = rejected_by_type.get(kind, 0) + 1
+        finally:
+            try:
+                process.terminate()
+                process.wait(timeout=5)
+            except Exception:
+                try:
+                    process.kill()
+                except Exception:
+                    pass
+            try:
+                config_path.unlink(missing_ok=True)
+            except Exception:
+                pass
+
+    for batch in chunks(nodes, 10):
+        test_batch(batch)
+
+    # Preserve the original global score order after the batch-wise checks.
+    valid_ids = {id(item) for item in valid}
+    valid = [item for item in nodes if id(item) in valid_ids]
+    return valid, {
+        "tested_by_protocol": dict(sorted(tested_by_type.items())),
+        "passed_by_protocol": dict(sorted(passed_by_type.items())),
+        "rejected_by_protocol": dict(sorted(rejected_by_type.items())),
+    }
 
 
 def _yaml_plain(value):
@@ -717,14 +840,29 @@ def main():
         report["unique_us_egress_ips_after_dedup"] = len(seen_egress_ips)
         report["protocol_counts"]["after_dedup"] = protocol_counts(diverse)
         report["stage_counts"]["after_dedup"] = len(diverse)
+
+        # Critical extra gate: re-test the exact cleaned proxy fields that will
+        # be written to the subscription, using Mihomo's config validator and
+        # three live HTTPS delay targets through each exported proxy.
+        export_valid, export_validation = validate_exported_candidates(diverse, clash_bin)
+        report["exported_config_validation"] = export_validation
+        report["protocol_counts"]["export_config_validated"] = protocol_counts(export_valid)
+        report["stage_counts"]["export_config_validated"] = len(export_valid)
+        print(
+            f"[export-check] passed={len(export_valid)}/{len(diverse)}; "
+            f"protocols={protocol_counts(export_valid)}",
+            flush=True,
+        )
+        diverse = export_valid
+
         top, selection_quota = select_protocol_diverse(
             diverse, target=50, minimum_per_protocol=3
         )
         report["protocol_selection_minimum"] = 3
         report["protocol_selection_quota"] = selection_quota
-        report["protocols_available_after_dedup"] = protocol_counts(diverse)
+        report["protocols_available_after_export_validation"] = protocol_counts(diverse)
         if not top:
-            raise RuntimeError("No US node completed both latency and download tests")
+            raise RuntimeError("No US node passed the exported-config compatibility checks")
 
         clean_nodes, ranking = [], []
         for rank, proxy in enumerate(top, 1):
@@ -756,6 +894,33 @@ def main():
         subscription_path = OUT / "us_top50.yaml"
         with subscription_path.open("w", encoding="utf-8") as handle:
             yaml.dump(config, handle, Dumper=PlainSafeDumper, allow_unicode=True, sort_keys=False)
+
+        # Validate the complete final YAML (including proxy-groups/rules) before
+        # the workflow is allowed to publish it. The controller exists only in
+        # this temporary validation copy and is never included in the user file.
+        final_validation = dict(config)
+        final_validation["external-controller"] = clash.EXTERNAL_CONTROLLER
+        final_check_path = WORKSPACE / "us_top50_final_validation.yaml"
+        with final_check_path.open("w", encoding="utf-8") as handle:
+            yaml.dump(
+                final_validation, handle, Dumper=PlainSafeDumper,
+                allow_unicode=True, sort_keys=False,
+            )
+        final_syntax = subprocess.run(
+            [str(WORKSPACE / clash_bin), "-t", "-d", str(WORKSPACE), "-f", str(final_check_path)],
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            text=True, timeout=35,
+        )
+        report["final_yaml_syntax_check"] = {
+            "passed": final_syntax.returncode == 0,
+            "detail": final_syntax.stdout[-1500:],
+        }
+        final_check_path.unlink(missing_ok=True)
+        if final_syntax.returncode != 0:
+            raise RuntimeError(
+                "The complete final subscription YAML failed Mihomo config validation: "
+                + final_syntax.stdout[-1000:]
+            )
 
         report["final_count"] = len(clean_nodes)
         report["protocol_counts"]["final"] = protocol_counts(clean_nodes)
