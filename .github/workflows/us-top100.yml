@@ -20,7 +20,7 @@ env:
 permissions:
   contents: read
 
-# A new Top-20 run must not wait behind the previous five-hour job.
+# Keep Top-50 runs isolated from older workflow revisions.
 concurrency:
   group: us-top50-${{ github.ref }}
   cancel-in-progress: false
@@ -74,7 +74,7 @@ jobs:
           archive="output/history/us-top50-${GITHUB_RUN_ID}"
           mkdir -p "${archive}"
           if [[ -f output/us_top50.yaml ]]; then
-            cp output/us_top20.yaml "${archive}/us-top50-${GITHUB_RUN_ID}.yaml"
+            cp output/us_top50.yaml "${archive}/us-top50-${GITHUB_RUN_ID}.yaml"
           fi
           if [[ -f output/report.json ]]; then
             cp output/report.json "${archive}/report-${GITHUB_RUN_ID}.json"
@@ -90,7 +90,7 @@ jobs:
           name: us-top50-run-${{ github.run_id }}
           path: |
             output/history/
-            output/us_top20.yaml
+            output/us_top50.yaml
             output/report.json
             output/round-summary.txt
             output/attempts/
