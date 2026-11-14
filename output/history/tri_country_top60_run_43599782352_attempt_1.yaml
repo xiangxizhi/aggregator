@@ -1,0 +1,333 @@
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: warning
+ipv6: false
+proxies:
+- name: US-001 | US-HTTP 002
+  type: http
+  server: 162.244.227.36
+  port: 443
+  udp: true
+  tls: true
+  skip-cert-verify: true
+- cipher: rc4-md5
+  name: US-002 | SHADOWSOCKS 014
+  password: 14fFPrbezE3HDZzsMOr6
+  port: 8080
+  server: 138.199.42.68
+  type: ss
+  udp: true
+- name: US-003 | TROJAN 002
+  password: ae7eb4dwyaz25pxwgq59
+  port: 59689
+  server: 66.23.203.21
+  skip-cert-verify: true
+  sni: ''
+  type: trojan
+  udp: true
+- name: US-004 | 美国 | USA 003
+  server: 156.229.167.109
+  port: 8443
+  type: vless
+  uuid: eb8c97f7-a154-4442-91b0-54c0d055ad0b
+  tls: true
+  reality-opts:
+    public-key: 4g6gX0ueJap7pY_iTDx23h6bzo3KIOTcFzP1Uacn0QA
+    short-id: 4ad2e4e660550e43
+  servername: github.githubassets.com
+  client-fingerprint: chrome
+  network: tcp
+  udp: true
+- name: US-005 | UNITED STATES 004
+  type: vmess
+  server: 162.251.62.44
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: xmfhlpy.com
+- name: US-006 | HYSTERIA2 006
+  password: bce6c821-200d-421f-bf3d-7159e5246ea0
+  port: 33333
+  server: hy2.123266.xyz
+  skip-cert-verify: true
+  sni: ''
+  type: hysteria2
+  udp: true
+- alpn:
+  - h3
+  auth-str: github.com/Alvin9999-newpac/fanqiang
+  down: '55'
+  name: US-007 | US-9|1015KB 001
+  port: 22335
+  server: 198.200.57.142
+  skip-cert-verify: true
+  type: hysteria
+  up: '11'
+  x-toolall-mihomo: true
+  udp: true
+- cipher: aes-256-gcm
+  name: US-008 | SHADOWSOCKS 008
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  port: 19999
+  server: 193.151.163.18
+  type: ss
+  udp: true
+- name: US-009 | TROJAN 003
+  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  port: 443
+  server: 216.152.156.42
+  skip-cert-verify: true
+  sni: 216.152.156.42
+  type: trojan
+  udp: true
+- name: US-010 | US-HTTP 006
+  type: http
+  server: 138.199.35.198
+  port: 9002
+  udp: true
+  tls: true
+  skip-cert-verify: true
+- name: US-011 | HYSTERIA2 005
+  password: gf1:gfhysteria2024
+  port: 443
+  server: 66.94.121.46
+  skip-cert-verify: true
+  sni: vk.com
+  type: hysteria2
+  udp: true
+- name: US-012 | PROXYPOOL | 美国 | USA 001
+  server: 137.175.82.44
+  port: 20022
+  type: hysteria
+  auth_str: dongtaiwang.com
+  auth-str: dongtaiwang.com
+  up: '10'
+  down: '50'
+  skip-cert-verify: true
+  alpn:
+  - h3
+  udp: true
+- client-fingerprint: chrome
+  name: US-013 | 美国 | USA 001
+  network: xhttp
+  port: 443
+  server: 200.102.179.69
+  servername: dmbdnpctq8hjxx.hat.onl
+  tls: true
+  type: vless
+  udp: true
+  uuid: 7592ca5c-b352-4562-8856-a9c936a3331b
+  xhttp-opts:
+    host: dmbdnpctq8hjxx.hat.onl
+    mode: auto
+    path: /hls/014373eq/seg
+- cipher: aes-128-gcm
+  name: US-014 | SHADOWSOCKS 011
+  password: shadowsocks
+  port: 443
+  server: 156.146.38.169
+  type: ss
+  udp: true
+- name: US-015 | US-HTTP 003
+  type: http
+  server: 138.199.35.203
+  port: 9002
+  udp: true
+  tls: true
+  skip-cert-verify: true
+- name: US-016 | TROJAN 004
+  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  port: 443
+  server: 66.163.112.171
+  skip-cert-verify: false
+  sni: learn.unlockyourfuturefindyourperfectcareer.com
+  type: trojan
+  udp: true
+- name: US-017 | UNITED STATES 003
+  type: ss
+  server: 185.215.132.9
+  port: 19999
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- name: US-018 | US-HTTP 001
+  type: http
+  server: 138.199.35.196
+  port: 9002
+  udp: true
+  tls: true
+  skip-cert-verify: true
+  password: None
+- name: US-019 | TROJAN 001
+  password: nwilryafgkyvuxauc8pz
+  port: 50875
+  server: 69.164.240.85
+  skip-cert-verify: true
+  sni: ''
+  type: trojan
+  udp: true
+- cipher: aes-256-gcm
+  name: US-020 | SHADOWSOCKS 005
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  port: 19999
+  server: 185.230.230.18
+  type: ss
+  udp: true
+- name: IT-001 | IT-HTTP 002
+  type: http
+  server: 95.229.15.89
+  port: 443
+  udp: true
+  tls: true
+  skip-cert-verify: true
+- name: IT-002 | IT-HTTP 001
+  type: http
+  server: 91.243.118.217
+  port: 443
+  udp: true
+  tls: true
+  skip-cert-verify: true
+- name: JP-001 | 美国 | USA 001
+  server: jp032009.ssgreen.org
+  port: 443
+  type: vmess
+  uuid: ac5f3041-2767-4f2d-a173-29555b868b3e
+  alterId: 0
+  cipher: auto
+  tls: true
+  skip-cert-verify: true
+  network: ws
+  ws-opts:
+    path: /wes
+    headers:
+      Host: JP032009.ssgreen.org
+  udp: true
+- name: JP-002 | JAPAN 001
+  type: hysteria2
+  server: 138.3.208.26
+  port: 50160
+  password: 184cdec28da5a09450803c8debcd2cc9
+  sni: www.bing.com
+  skip-cert-verify: true
+  udp: true
+- name: JP-003 | 日本 | JPN 001
+  server: forwarded.frnhk.xyz
+  port: 2052
+  type: anytls
+  password: 9922ea3a-7314-4af5-a4cb-eb68a9b94fca
+  sni: jp2.gosthk.site
+  skip-cert-verify: true
+  udp: true
+- name: JP-004 | HYSTERIA2 004
+  password: u63SxILNwtrQZ7Y1ZrFaZfsA
+  port: 8443
+  server: 8.211.175.236
+  skip-cert-verify: true
+  sni: 8.211.175.236
+  type: hysteria2
+  udp: true
+- name: JP-005 | HYSTERIA2 001
+  password: usqmqUKJFIlCmvkCNSY64L3k
+  port: 443
+  server: 8.209.247.109
+  skip-cert-verify: true
+  sni: bing.com
+  type: hysteria2
+  udp: true
+proxy-groups:
+- name: 美国优选20
+  type: select
+  proxies: &id001
+  - US-001 | US-HTTP 002
+  - US-002 | SHADOWSOCKS 014
+  - US-003 | TROJAN 002
+  - US-004 | 美国 | USA 003
+  - US-005 | UNITED STATES 004
+  - US-006 | HYSTERIA2 006
+  - US-007 | US-9|1015KB 001
+  - US-008 | SHADOWSOCKS 008
+  - US-009 | TROJAN 003
+  - US-010 | US-HTTP 006
+  - US-011 | HYSTERIA2 005
+  - US-012 | PROXYPOOL | 美国 | USA 001
+  - US-013 | 美国 | USA 001
+  - US-014 | SHADOWSOCKS 011
+  - US-015 | US-HTTP 003
+  - US-016 | TROJAN 004
+  - US-017 | UNITED STATES 003
+  - US-018 | US-HTTP 001
+  - US-019 | TROJAN 001
+  - US-020 | SHADOWSOCKS 005
+- name: 美国自动测速
+  type: url-test
+  proxies: *id001
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+- name: 意大利优选2
+  type: select
+  proxies: &id002
+  - IT-001 | IT-HTTP 002
+  - IT-002 | IT-HTTP 001
+- name: 意大利自动测速
+  type: url-test
+  proxies: *id002
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+- name: 日本优选5
+  type: select
+  proxies: &id003
+  - JP-001 | 美国 | USA 001
+  - JP-002 | JAPAN 001
+  - JP-003 | 日本 | JPN 001
+  - JP-004 | HYSTERIA2 004
+  - JP-005 | HYSTERIA2 001
+- name: 日本自动测速
+  type: url-test
+  proxies: *id003
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+- name: 三国优选27
+  type: select
+  proxies: &id004
+  - US-001 | US-HTTP 002
+  - US-002 | SHADOWSOCKS 014
+  - US-003 | TROJAN 002
+  - US-004 | 美国 | USA 003
+  - US-005 | UNITED STATES 004
+  - US-006 | HYSTERIA2 006
+  - US-007 | US-9|1015KB 001
+  - US-008 | SHADOWSOCKS 008
+  - US-009 | TROJAN 003
+  - US-010 | US-HTTP 006
+  - US-011 | HYSTERIA2 005
+  - US-012 | PROXYPOOL | 美国 | USA 001
+  - US-013 | 美国 | USA 001
+  - US-014 | SHADOWSOCKS 011
+  - US-015 | US-HTTP 003
+  - US-016 | TROJAN 004
+  - US-017 | UNITED STATES 003
+  - US-018 | US-HTTP 001
+  - US-019 | TROJAN 001
+  - US-020 | SHADOWSOCKS 005
+  - IT-001 | IT-HTTP 002
+  - IT-002 | IT-HTTP 001
+  - JP-001 | 美国 | USA 001
+  - JP-002 | JAPAN 001
+  - JP-003 | 日本 | JPN 001
+  - JP-004 | HYSTERIA2 004
+  - JP-005 | HYSTERIA2 001
+- name: 三国自动测速
+  type: url-test
+  proxies: *id004
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+rules:
+- MATCH,三国优选27
