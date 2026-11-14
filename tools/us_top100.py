@@ -628,8 +628,6 @@ def collect_public_feeds(groups):
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    # Never let a failed/short run accidentally archive or publish yesterday's file.
-    (OUT / "us_top36.yaml").unlink(missing_ok=True)
     report = {
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "runner": "GitHub Actions ubuntu-latest",
@@ -895,9 +893,13 @@ def main():
                     "tolerance": 100,
                 },
             ],
-            "rules": ["MATCH,美国优选50"],
+            "rules": ["MATCH,美国优选36"],
         }
-        subscription_path = OUT / "us_top36.yaml"
+        run_id = os.environ.get("GITHUB_RUN_ID", datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"))
+        run_attempt = os.environ.get("GITHUB_RUN_ATTEMPT", "1")
+        history_dir = OUT / "history"
+        history_dir.mkdir(parents=True, exist_ok=True)
+        subscription_path = history_dir / f"us_top36_run_{run_id}_attempt_{run_attempt}.yaml"
         with subscription_path.open("w", encoding="utf-8") as handle:
             yaml.dump(config, handle, Dumper=PlainSafeDumper, allow_unicode=True, sort_keys=False)
 
