@@ -421,7 +421,7 @@ def collect_public_feeds(groups):
                 except Exception:
                     pass
                 ermao_uris = list(dict.fromkeys(re.findall(
-                    r"(?im)^(?:vmess|vless|trojan|ss|ssr|snell|hysteria|hysteria2|tuic|anytls|socks5|https?)://[^\\s]+",
+                    r"(?im)^(?:vmess|vless|trojan|ss|ssr|snell|hysteria|hysteria2|tuic|anytls|socks5|https?)://[^\s]+",
                     candidate_text,
                 )))
         if ermao_proxies or ermao_uris:
