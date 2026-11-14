@@ -140,7 +140,8 @@ def check(
     interval = random.randint(30, 200) / 1000
     targets = [
         test_url,
-        "https://www.youtube.com/s/player/23010b46/player_ias.vflset/en_US/remote.js",
+        "https://cp.cloudflare.com/generate_204",
+        "https://www.cloudflare.com/cdn-cgi/trace",
     ]
     if strict:
         targets.append(random.choice(DOWNLOAD_URL))
