@@ -55,6 +55,43 @@ def protocol_counts(nodes):
     return dict(sorted(counts.items()))
 
 
+def select_protocol_diverse(nodes, target=20, minimum_per_protocol=3):
+    """Reserve a small quota for each available protocol before global score fill.
+
+    With a fixed target of 20, it is mathematically impossible to reserve three
+    nodes for more than six protocols. Prefer protocols known to work in the
+    user's Clash Mi tests, then fill remaining slots by measured score.
+    """
+    priority = [
+        "http", "hysteria", "hysteria2", "tuic", "anytls", "socks5",
+        "ssr", "snell", "vmess", "ss", "vless", "trojan",
+    ]
+    buckets = {}
+    for node in nodes:
+        kind = str(node.get("type", "unknown")).lower()
+        buckets.setdefault(kind, []).append(node)
+
+    selected, selected_ids, quota = [], set(), {}
+    for kind in priority:
+        bucket = buckets.get(kind, [])
+        if len(bucket) >= minimum_per_protocol and len(selected) + minimum_per_protocol <= target:
+            chosen = bucket[:minimum_per_protocol]
+            selected.extend(chosen)
+            selected_ids.update(id(item) for item in chosen)
+            quota[kind] = len(chosen)
+
+    for node in nodes:
+        if len(selected) >= target:
+            break
+        if id(node) not in selected_ids:
+            selected.append(node)
+            selected_ids.add(id(node))
+            kind = str(node.get("type", "unknown")).lower()
+            quota[kind] = quota.get(kind, 0) + 1
+
+    return selected, quota
+
+
 def run_alive_check(nodes, clash_bin):
     alive = []
     for index, batch in enumerate(chunks(nodes, BATCH_SIZE), 1):
@@ -352,6 +389,53 @@ def collect_public_feeds(groups):
     except Exception as exc:
         print(f"[public-feeds] Pawdroid fetch/parse failed: {exc}", flush=True)
 
+    # The user previously confirmed HTTP and Hysteria nodes from this feed
+    # work in Clash Mi. Import all supported protocols, but still re-test every
+    # candidate and independently verify its actual US egress.
+    try:
+        raw = utils.http_get(
+            url="https://www.ermao.net/sub/clash/ermao.net",
+            retry=2, timeout=60,
+        )
+        ermao_proxies, ermao_uris = [], []
+        if raw:
+            try:
+                parsed_feed = yaml.safe_load(raw)
+            except Exception:
+                parsed_feed = None
+            if isinstance(parsed_feed, dict):
+                ermao_proxies = [
+                    item for item in parsed_feed.get("proxies", [])
+                    if isinstance(item, dict)
+                    and str(item.get("type", "")).lower() in ALLOWED_TYPES
+                    and item.get("server") and item.get("port")
+                ]
+            if not ermao_proxies:
+                candidate_text = raw.strip()
+                try:
+                    decoded = base64.b64decode(
+                        re.sub(r"\\s+", "", candidate_text) + "=" * (-len(re.sub(r"\\s+", "", candidate_text)) % 4)
+                    ).decode("utf-8", errors="ignore")
+                    if decoded:
+                        candidate_text = decoded
+                except Exception:
+                    pass
+                ermao_uris = list(dict.fromkeys(re.findall(
+                    r"(?im)^(?:vmess|vless|trojan|ss|ssr|snell|hysteria|hysteria2|tuic|anytls|socks5|https?)://[^\\s]+",
+                    candidate_text,
+                )))
+        if ermao_proxies or ermao_uris:
+            sites.append(SiteConfig(
+                name="public-ermao-clash-mi-tested",
+                nodes=NodeInput(proxies=ermao_proxies, uris=ermao_uris),
+                push_to=push_to,
+                origin="PUBLIC_FEED",
+            ))
+        stats["ermao_proxies"] = len(ermao_proxies)
+        stats["ermao_uris"] = len(ermao_uris)
+    except Exception as exc:
+        print(f"[public-feeds] ermao fetch/parse failed: {exc}", flush=True)
+
     # This feed is pre-labelled US, but that label is deliberately NOT trusted:
     # all imported nodes must pass our own live-proxy egress GeoIP test.
     try:
@@ -601,7 +685,12 @@ def main():
         report["unique_us_egress_ips_after_dedup"] = len(seen_egress_ips)
         report["protocol_counts"]["after_dedup"] = protocol_counts(diverse)
         report["stage_counts"]["after_dedup"] = len(diverse)
-        top = diverse[:20]
+        top, selection_quota = select_protocol_diverse(
+            diverse, target=20, minimum_per_protocol=3
+        )
+        report["protocol_selection_minimum"] = 3
+        report["protocol_selection_quota"] = selection_quota
+        report["protocols_available_after_dedup"] = protocol_counts(diverse)
         if not top:
             raise RuntimeError("No US node completed both latency and download tests")
 
