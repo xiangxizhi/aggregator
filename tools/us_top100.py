@@ -344,6 +344,7 @@ def main():
         "us_egress_confirmed": 0,
         "speed_measured": 0,
         "final_count": 0,
+        "target_count": 20,
         "notes": [
             "Country is checked through each proxy's actual egress connection, not the node label or origin server IP.",
             "Cloud runner measurements are not the user's phone-network measurements.",
@@ -501,7 +502,7 @@ def main():
 
         measured = measure_and_rank(us_nodes)
         report["speed_measured"] = len(measured)
-        top = measured[:100]
+        top = measured[:20]
         if not top:
             raise RuntimeError("No US node completed both latency and download tests")
 
