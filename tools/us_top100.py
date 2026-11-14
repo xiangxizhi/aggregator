@@ -244,8 +244,23 @@ def measure_and_rank(nodes):
     return measured
 
 
+def _yaml_plain(value):
+    """Convert library-specific values to standard YAML-safe Python types."""
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, dict):
+        return {str(key): _yaml_plain(val) for key, val in value.items()}
+    if isinstance(value, (list, tuple, set)):
+        return [_yaml_plain(val) for val in value]
+    # Enums and custom scalar wrappers sometimes leak from parsed proxy objects.
+    enum_value = getattr(value, "value", None)
+    if enum_value is not None and enum_value is not value:
+        return _yaml_plain(enum_value)
+    return str(value)
+
+
 def clean_proxy(proxy, rank):
-    item = dict(proxy)
+    item = _yaml_plain(dict(proxy))
     original = item.pop("_original_name", item.get("name", "node"))
     item.pop("_latency_samples", None)
     item.pop("_speed_samples", None)
