@@ -414,7 +414,7 @@ def collect_public_feeds(groups):
                 candidate_text = raw.strip()
                 try:
                     decoded = base64.b64decode(
-                        re.sub(r"\\s+", "", candidate_text) + "=" * (-len(re.sub(r"\\s+", "", candidate_text)) % 4)
+                        re.sub(r"\s+", "", candidate_text) + "=" * (-len(re.sub(r"\s+", "", candidate_text)) % 4)
                     ).decode("utf-8", errors="ignore")
                     if decoded:
                         candidate_text = decoded
