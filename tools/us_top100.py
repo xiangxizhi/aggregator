@@ -193,37 +193,36 @@ def _geo_api_probe(proxy, port, reader=None):
     )
 
 
-def locate_us(nodes, reader=None):
-    us_nodes, country_confirmed = [], 0
-    confirmed_by_type, us_by_type = {}, {}
-    for index, batch in enumerate(chunks(nodes, BATCH_SIZE), 1):
-        print(f"[geoip-egress] batch {index}, nodes={len(batch)}", flush=True)
+def locate_target_countries(nodes, reader=None):
+    targets = {"US": [], "IT": [], "JP": []}
+    confirmed = 0
+    confirmed_by_type, by_country_type = {}, {}
+    for batch in chunks(nodes, BATCH_SIZE):
         results = location.batch_query(
-            proxies=batch,
-            func=partial(_geo_api_probe, reader=reader),
-            num_threads=16,
-            show_progress=False,
-            description="Checking actual proxy egress country via independent APIs",
-            digits=3,
+            proxies=batch, func=partial(_geo_api_probe, reader=reader),
+            num_threads=16, show_progress=False,
+            description="Checking actual proxy egress country", digits=3,
         )
         for item in results or []:
             if not item or not item.success or not item.result:
                 continue
             country = (item.result.country or "").strip().upper()
-            if country:
-                country_confirmed += 1
-                kind = str(item.proxy.get("type", "unknown")).lower()
-                confirmed_by_type[kind] = confirmed_by_type.get(kind, 0) + 1
-            if country in ("美国", "US"):
+            if not country:
+                continue
+            confirmed += 1
+            kind = str(item.proxy.get("type", "unknown")).lower()
+            confirmed_by_type[kind] = confirmed_by_type.get(kind, 0) + 1
+            if country in targets:
                 proxy = item.proxy
-                kind = str(proxy.get("type", "unknown")).lower()
-                us_by_type[kind] = us_by_type.get(kind, 0) + 1
-                proxy["name"] = proxy.pop("_original_name", proxy.get("name", "US node"))
-                us_nodes.append(proxy)
-    print(f"[geoip-egress] country confirmed={country_confirmed}; US={len(us_nodes)}", flush=True)
-    return us_nodes, country_confirmed, {
+                proxy["_egress_country"] = country
+                proxy["name"] = proxy.pop("_original_name", proxy.get("name", "node"))
+                targets[country].append(proxy)
+                bucket = by_country_type.setdefault(country, {})
+                bucket[kind] = bucket.get(kind, 0) + 1
+    print("[geoip-egress] target countries: " + str({k: len(v) for k, v in targets.items()}), flush=True)
+    return targets, confirmed, {
         "country_confirmed_by_type": dict(sorted(confirmed_by_type.items())),
-        "us_confirmed_by_type": dict(sorted(us_by_type.items())),
+        "target_country_protocol_counts": by_country_type,
     }
 
 
@@ -473,7 +472,8 @@ def clean_proxy(proxy, rank):
     item.pop("liveness", None)
     item.pop("cdn", None)
     item.pop("renamed", None)
-    item["name"] = f"US-{rank:03d} | {str(original)[:48]}"
+    country = str(item.pop("_egress_country", "US")).upper()
+    item["name"] = f"{country}-{rank:03d} | {str(original)[:48]}"
     return item, {
         "rank": rank,
         "name": item["name"],
@@ -636,10 +636,11 @@ def main():
         "parsed_supported": 0,
         "alive": 0,
         "egress_country_confirmed": 0,
-        "us_egress_confirmed": 0,
+        "country_egress_confirmed": {},
+        "country_targets": {"US": 20, "IT": 20, "JP": 20},
         "speed_measured": 0,
         "final_count": 0,
-        "target_count": 36,
+        "target_count": 60,
         "protocol_counts": {},
         "stage_counts": {},
         "notes": [
@@ -809,97 +810,93 @@ def main():
         except Exception as exc:
             print(f"[geoip] optional MMDB unavailable; using online APIs: {exc}", flush=True)
         try:
-            us_nodes, confirmed, geo_protocol_stats = locate_us(alive, reader)
+            country_nodes, confirmed, geo_protocol_stats = locate_target_countries(alive, reader)
         finally:
             if reader:
                 reader.close()
         report["egress_country_confirmed"] = confirmed
-        report["us_egress_confirmed"] = len(us_nodes)
+        report["country_egress_confirmed"] = {code: len(items) for code, items in country_nodes.items()}
         report["geo_protocol_counts"] = geo_protocol_stats
-        report["protocol_counts"]["us_egress_confirmed"] = protocol_counts(us_nodes)
+        report["protocol_counts"]["target_countries"] = {code: protocol_counts(items) for code, items in country_nodes.items()}
         report["stage_counts"]["country_confirmed"] = confirmed
-        report["stage_counts"]["us_egress_confirmed"] = len(us_nodes)
-        report["geoip_method"] = "at least two independent online APIs must agree on country and exact egress IP"
-        print(f"[geoip-egress] US confirmed={len(us_nodes)}", flush=True)
-        if not us_nodes:
-            raise RuntimeError("No live node had a verifiably US egress IP")
+        report["geoip_method"] = "At least two independent online APIs must agree on country and exact egress IP"
+        if not any(country_nodes.values()):
+            raise RuntimeError("No live node had a verifiably US, Italy or Japan egress IP")
 
-        measured = measure_and_rank(us_nodes)
-        report["speed_measured"] = len(measured)
-        report["protocol_counts"]["speed_measured"] = protocol_counts(measured)
-        report["stage_counts"]["speed_measured"] = len(measured)
-        diverse, seen_endpoints, seen_egress_ips = [], set(), set()
-        for proxy in measured:
-            endpoint = (str(proxy.get("server", "")).lower(), str(proxy.get("port", "")))
-            egress_ip = str(proxy.get("_egress_ip", "")).strip()
-            if not endpoint[0] or not endpoint[1] or endpoint in seen_endpoints:
-                continue
-            if egress_ip and egress_ip in seen_egress_ips:
-                continue
-            seen_endpoints.add(endpoint)
-            if egress_ip:
-                seen_egress_ips.add(egress_ip)
-            diverse.append(proxy)
+        measured_by_country, all_measured = {}, []
+        for code in ("US", "IT", "JP"):
+            measured_by_country[code] = measure_and_rank(country_nodes.get(code, []))
+            all_measured.extend(measured_by_country[code])
+        report["speed_measured_by_country"] = {code: len(items) for code, items in measured_by_country.items()}
+        report["speed_measured"] = len(all_measured)
+        report["protocol_counts"]["speed_measured"] = protocol_counts(all_measured)
+        report["stage_counts"]["speed_measured"] = len(all_measured)
+
+        distinct_by_country = {"US": [], "IT": [], "JP": []}
+        seen_endpoints, seen_ips = set(), set()
+        for code in ("US", "IT", "JP"):
+            for proxy in measured_by_country[code]:
+                endpoint = (str(proxy.get("server", "")).lower(), str(proxy.get("port", "")))
+                egress_ip = str(proxy.get("_egress_ip", "")).strip()
+                if not endpoint[0] or not endpoint[1] or endpoint in seen_endpoints:
+                    continue
+                if egress_ip and egress_ip in seen_ips:
+                    continue
+                seen_endpoints.add(endpoint)
+                if egress_ip:
+                    seen_ips.add(egress_ip)
+                distinct_by_country[code].append(proxy)
+        diverse = [p for code in ("US", "IT", "JP") for p in distinct_by_country[code]]
         report["unique_server_endpoints_after_dedup"] = len(seen_endpoints)
-        report["unique_us_egress_ips_after_dedup"] = len(seen_egress_ips)
+        report["unique_egress_ips_after_dedup"] = len(seen_ips)
         report["protocol_counts"]["after_dedup"] = protocol_counts(diverse)
         report["stage_counts"]["after_dedup"] = len(diverse)
 
-        # Critical extra gate: re-test the exact cleaned proxy fields that will
-        # be written to the subscription, using Mihomo's config validator and
-        # three live HTTPS delay targets through each exported proxy.
         export_valid, export_validation = validate_exported_candidates(diverse, clash_bin)
         report["exported_config_validation"] = export_validation
         report["protocol_counts"]["export_config_validated"] = protocol_counts(export_valid)
         report["stage_counts"]["export_config_validated"] = len(export_valid)
-        print(
-            f"[export-check] passed={len(export_valid)}/{len(diverse)}; "
-            f"protocols={protocol_counts(export_valid)}",
-            flush=True,
-        )
-        diverse = export_valid
-
-        top, selection_quota = select_protocol_diverse(
-            diverse, target=36, minimum_per_protocol=3
-        )
-        report["protocol_selection_minimum"] = 3
-        report["protocol_selection_quota"] = selection_quota
-        report["protocols_available_after_export_validation"] = protocol_counts(diverse)
-        if not top:
-            raise RuntimeError("No US node passed the exported-config compatibility checks")
+        selected_by_country, selection_stats = {}, {}
+        for code in ("US", "IT", "JP"):
+            eligible = [p for p in export_valid if p.get("_egress_country") == code]
+            selected, quota = select_protocol_diverse(eligible, target=20, minimum_per_protocol=1)
+            selected_by_country[code] = selected
+            selection_stats[code] = {"available": len(eligible), "selected": len(selected), "protocol_quota": quota, "protocol_counts": protocol_counts(selected)}
+        report["country_selection"] = selection_stats
+        report["protocols_available_after_export_validation"] = protocol_counts(export_valid)
 
         clean_nodes, ranking = [], []
-        for rank, proxy in enumerate(top, 1):
-            node, row = clean_proxy(proxy, rank)
-            clean_nodes.append(node)
-            ranking.append(row)
+        for code in ("US", "IT", "JP"):
+            for rank, proxy in enumerate(selected_by_country[code], 1):
+                node, row = clean_proxy(proxy, rank)
+                clean_nodes.append(node)
+                row["country"] = code
+                ranking.append(row)
+        if not clean_nodes:
+            raise RuntimeError("No node passed exported-config compatibility checks")
 
-        names = [p["name"] for p in clean_nodes]
+        country_labels = {"US": "美国", "IT": "意大利", "JP": "日本"}
+        names_by_country = {code: [p["name"] for p in clean_nodes if p["name"].startswith(code + "-")] for code in ("US", "IT", "JP")}
+        all_names = [p["name"] for p in clean_nodes]
+        groups = []
+        for code in ("US", "IT", "JP"):
+            names = names_by_country[code]
+            if names:
+                groups.append({"name": country_labels[code] + "优选" + str(len(names)), "type": "select", "proxies": names})
+                groups.append({"name": country_labels[code] + "自动测速", "type": "url-test", "proxies": names, "url": TEST_URL, "interval": 300, "tolerance": 100})
+        groups.append({"name": "三国优选" + str(len(all_names)), "type": "select", "proxies": all_names})
+        groups.append({"name": "三国自动测速", "type": "url-test", "proxies": all_names, "url": TEST_URL, "interval": 300, "tolerance": 100})
         config = {
-            "mixed-port": 7890,
-            "allow-lan": False,
-            "mode": "rule",
-            "log-level": "warning",
-            "ipv6": False,
-            "proxies": clean_nodes,
-            "proxy-groups": [
-                {"name": "美国优选36", "type": "select", "proxies": names},
-                {
-                    "name": "美国自动测速36",
-                    "type": "url-test",
-                    "proxies": names,
-                    "url": "https://www.gstatic.com/generate_204",
-                    "interval": 300,
-                    "tolerance": 100,
-                },
-            ],
-            "rules": ["MATCH,美国优选36"],
+            "mixed-port": 7890, "allow-lan": False, "mode": "rule",
+            "log-level": "warning", "ipv6": False,
+            "proxies": clean_nodes, "proxy-groups": groups,
+            "rules": ["MATCH,三国优选" + str(len(all_names))],
         }
         run_id = os.environ.get("GITHUB_RUN_ID", datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"))
         run_attempt = os.environ.get("GITHUB_RUN_ATTEMPT", "1")
         history_dir = OUT / "history"
         history_dir.mkdir(parents=True, exist_ok=True)
-        subscription_path = history_dir / f"us_top36_run_{run_id}_attempt_{run_attempt}.yaml"
+        subscription_path = history_dir / f"tri_country_top60_run_{run_id}_attempt_{run_attempt}.yaml"
         with subscription_path.open("w", encoding="utf-8") as handle:
             yaml.dump(config, handle, Dumper=PlainSafeDumper, allow_unicode=True, sort_keys=False)
 
@@ -908,7 +905,7 @@ def main():
         # this temporary validation copy and is never included in the user file.
         final_validation = dict(config)
         final_validation["external-controller"] = clash.EXTERNAL_CONTROLLER
-        final_check_path = WORKSPACE / "us_top50_final_validation.yaml"
+        final_check_path = WORKSPACE / "tri_country_top60_final_validation.yaml"
         with final_check_path.open("w", encoding="utf-8") as handle:
             yaml.dump(
                 final_validation, handle, Dumper=PlainSafeDumper,
@@ -934,14 +931,10 @@ def main():
         report["protocol_counts"]["final"] = protocol_counts(clean_nodes)
         report["stage_counts"]["final"] = len(clean_nodes)
         report["ranking"] = ranking
+        report["country_final_counts"] = {code: len(names_by_country[code]) for code in ("US", "IT", "JP")}
+        report["status"] = "success"
         if len(clean_nodes) < report["target_count"]:
-            report["status"] = "insufficient"
-            report["error"] = (
-                f"Only {len(clean_nodes)} verified unique US nodes; "
-                f"{report['target_count']} required. Previous subscription will not be published."
-            )
-        else:
-            report["status"] = "success"
+            report["note"] = f"Partial result: saved all {len(clean_nodes)} validated nodes; target was 60."
         report["test_limits"] = (
             "Latency is the median of up to three HTTPS 204 requests. Download speed is the median of "
             "up to two 512 KiB Cloudflare downloads. These are GitHub runner results, not handset results."
