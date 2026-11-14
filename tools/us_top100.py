@@ -11,6 +11,7 @@ import statistics
 import subprocess
 import sys
 import time
+from collections.abc import Mapping
 from datetime import datetime, timezone
 from functools import partial
 from pathlib import Path
@@ -257,6 +258,19 @@ def _yaml_plain(value):
     if enum_value is not None and enum_value is not value:
         return _yaml_plain(enum_value)
     return str(value)
+
+
+class PlainSafeDumper(yaml.SafeDumper):
+    """Safely serialize parser/library scalar wrappers as plain YAML scalars."""
+    def represent_data(self, data):
+        if type(data) not in (str, int, float, bool, type(None), dict, list, tuple):
+            if isinstance(data, Mapping):
+                data = {str(key): value for key, value in data.items()}
+            elif isinstance(data, (list, tuple, set)):
+                data = list(data)
+            else:
+                data = str(data)
+        return super().represent_data(data)
 
 
 def clean_proxy(proxy, rank):
@@ -550,7 +564,7 @@ def main():
         }
         subscription_path = OUT / "us_top20.yaml"
         with subscription_path.open("w", encoding="utf-8") as handle:
-            yaml.safe_dump(config, handle, allow_unicode=True, sort_keys=False)
+            yaml.dump(config, handle, Dumper=PlainSafeDumper, allow_unicode=True, sort_keys=False)
 
         report["final_count"] = len(clean_nodes)
         report["ranking"] = ranking
