@@ -22,7 +22,7 @@ permissions:
 # A new Top-20 run must not wait behind the previous five-hour job.
 concurrency:
   group: us-top20-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -60,22 +60,38 @@ jobs:
           if [[ -f output/report.json ]]; then
             cp output/report.json output/attempts/round-1-report.json
           fi
+          finished_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           {
             echo "target_count=20"
+            echo "run_id=${GITHUB_RUN_ID}"
+            echo "run_number=${GITHUB_RUN_NUMBER}"
             echo "exit_code=${rc}"
-            echo "finished_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "finished_utc=${finished_utc}"
           } | tee output/round-summary.txt
+
+          # Keep an immutable, run-specific copy so later runs never replace it.
+          archive="output/history/us-top20-${GITHUB_RUN_ID}"
+          mkdir -p "${archive}"
+          if [[ -f output/us_top20.yaml ]]; then
+            cp output/us_top20.yaml "${archive}/us-top20-${GITHUB_RUN_ID}.yaml"
+          fi
+          if [[ -f output/report.json ]]; then
+            cp output/report.json "${archive}/report-${GITHUB_RUN_ID}.json"
+          fi
+          cp output/round-summary.txt "${archive}/summary-${GITHUB_RUN_ID}.txt"
+          cp output/attempts/round-1.log "${archive}/round-1-${GITHUB_RUN_ID}.log" 2>/dev/null || true
           exit "${rc}"
 
       - name: Upload this round's report, subscription and logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: us-top20-${{ github.run_number }}
+          name: us-top20-run-${{ github.run_id }}
           path: |
+            output/history/
             output/us_top20.yaml
             output/report.json
             output/round-summary.txt
             output/attempts/
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 90
