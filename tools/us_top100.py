@@ -484,7 +484,7 @@ def main():
                 str(p.get("server", "")).lower(),
                 str(p.get("port", "")),
                 str(p.get("uuid", p.get("password", ""))),
-                str(p.get("name", "")),
+                str(p.get("sni", p.get("servername", ""))).lower(),
             )
             unique.setdefault(key, p)
         candidates = list(unique.values())
