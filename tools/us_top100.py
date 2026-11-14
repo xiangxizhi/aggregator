@@ -533,7 +533,7 @@ def main():
             ],
             "rules": ["MATCH,美国优选"],
         }
-        subscription_path = OUT / "us_top100.yaml"
+        subscription_path = OUT / "us_top20.yaml"
         with subscription_path.open("w", encoding="utf-8") as handle:
             yaml.safe_dump(config, handle, allow_unicode=True, sort_keys=False)
 
