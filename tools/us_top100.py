@@ -32,7 +32,7 @@ from crawl import engine as crawl_engine
 from geoip2 import database
 from location import ProxyInfo, ProxyQueryResult
 
-ALLOWED_TYPES = {"vmess", "vless", "trojan", "ss"}
+ALLOWED_TYPES = {"vmess", "vless", "trojan", "ss", "ssr", "snell", "hysteria", "hysteria2", "tuic", "anytls", "http", "socks5"}
 MAX_CANDIDATES = 10000  # Public feeds plus configured crawlers; strict successful Mihomo checks only
 BATCH_SIZE = 80
 SPEED_BYTES = 524288
