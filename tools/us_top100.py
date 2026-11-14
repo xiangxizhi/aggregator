@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Build a US-egress-only Clash/Mihomo subscription from the configured Telegram crawl.
+# Build a verified US/Italy/Japan Clash/Mihomo subscription.
 from __future__ import annotations
 
 import base64
@@ -55,7 +55,7 @@ def protocol_counts(nodes):
     return dict(sorted(counts.items()))
 
 
-def select_protocol_diverse(nodes, target=36, minimum_per_protocol=3):
+def select_protocol_diverse(nodes, target=20, minimum_per_protocol=1):
     """Select only the four retained protocols and balance their final counts.
 
     First reserve a minimum quota for each protocol with enough validated
@@ -657,7 +657,7 @@ def main():
     report = {
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "runner": "GitHub Actions ubuntu-latest",
-        "sources": ["Telegram", "Yandex Search", "GitHub Code/Issues", "Pawdroid/Free-servers", "Au1rxx/free-vpn-subscriptions (US shard, re-verified)", "mfuu/FreeProxies", "share-daily/node", "735754647/Free-Nodes", "nodesradar/nodesradar-en"],
+        "sources": ["Telegram", "Yandex Search", "GitHub Code/Issues", "Pawdroid/Free-servers", "Au1rxx/free-vpn-subscriptions (US/IT/JP shards, re-verified)", "mfuu/FreeProxies", "share-daily/node", "735754647/Free-Nodes", "nodesradar/nodesradar-en"],
         "raw_candidates": 0,
         "parsed_supported": 0,
         "alive": 0,
@@ -672,7 +672,8 @@ def main():
         "notes": [
             "Country is checked through each proxy's actual egress connection, not the node label or origin server IP.",
             "Cloud runner measurements are not the user's phone-network measurements.",
-            "Download speed uses two 512 KiB Cloudflare test downloads per confirmed US node.",
+            "Download speed uses two 512 KiB Cloudflare test downloads per confirmed target-country node.",
+            "The final file retains every validated node up to 20 per country; partial results are still published.",
         ],
     }
     try:
