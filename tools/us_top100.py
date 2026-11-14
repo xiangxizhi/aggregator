@@ -32,7 +32,7 @@ from crawl import engine as crawl_engine
 from geoip2 import database
 from location import ProxyInfo, ProxyQueryResult
 
-ALLOWED_TYPES = {"vmess", "vless", "trojan", "ss", "ssr", "snell", "hysteria", "hysteria2", "tuic", "anytls", "http", "socks5"}
+ALLOWED_TYPES = {"http", "ss", "trojan", "vless"}  # Keep the four protocols prioritized for handset compatibility
 MAX_CANDIDATES = 10000  # Public feeds plus configured crawlers; strict successful Mihomo checks only
 BATCH_SIZE = 80
 SPEED_BYTES = 524288
@@ -55,39 +55,45 @@ def protocol_counts(nodes):
     return dict(sorted(counts.items()))
 
 
-def select_protocol_diverse(nodes, target=50, minimum_per_protocol=3):
-    """Reserve three slots for every protocol with at least three validated nodes.
+def select_protocol_diverse(nodes, target=36, minimum_per_protocol=3):
+    """Select only the four retained protocols and balance their final counts.
 
-    With a target of 50, all 12 supported protocols can receive a three-node
-    quota when enough candidates pass the exported-config compatibility test.
-    Remaining slots are filled by measured score.
+    First reserve a minimum quota for each protocol with enough validated
+    candidates. Then repeatedly select from the currently least-represented
+    protocol, using the measured global score to break ties.
     """
-    priority = [
-        "http", "hysteria", "hysteria2", "tuic", "anytls", "socks5",
-        "ssr", "snell", "vmess", "ss", "vless", "trojan",
-    ]
+    priority = ["http", "ss", "trojan", "vless"]
     buckets = {}
     for node in nodes:
         kind = str(node.get("type", "unknown")).lower()
-        buckets.setdefault(kind, []).append(node)
+        if kind in ALLOWED_TYPES:
+            buckets.setdefault(kind, []).append(node)
 
+    # Incoming nodes are globally score-ranked; preserve that order per bucket.
     selected, selected_ids, quota = [], set(), {}
     for kind in priority:
         bucket = buckets.get(kind, [])
-        if len(bucket) >= minimum_per_protocol and len(selected) + minimum_per_protocol <= target:
+        if len(bucket) >= minimum_per_protocol:
             chosen = bucket[:minimum_per_protocol]
             selected.extend(chosen)
             selected_ids.update(id(item) for item in chosen)
             quota[kind] = len(chosen)
 
-    for node in nodes:
-        if len(selected) >= target:
+    # Balance by current count; among equally represented protocols, take
+    # the best next measured candidate. Stop at the target or when exhausted.
+    while len(selected) < target:
+        choices = []
+        for kind in priority:
+            bucket = buckets.get(kind, [])
+            next_node = next((item for item in bucket if id(item) not in selected_ids), None)
+            if next_node is not None:
+                choices.append((quota.get(kind, 0), -float(next_node.get("_score", 0)), priority.index(kind), kind, next_node))
+        if not choices:
             break
-        if id(node) not in selected_ids:
-            selected.append(node)
-            selected_ids.add(id(node))
-            kind = str(node.get("type", "unknown")).lower()
-            quota[kind] = quota.get(kind, 0) + 1
+        _, _, _, kind, node = min(choices)
+        selected.append(node)
+        selected_ids.add(id(node))
+        quota[kind] = quota.get(kind, 0) + 1
 
     return selected, quota
 
@@ -623,7 +629,7 @@ def collect_public_feeds(groups):
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     # Never let a failed/short run accidentally archive or publish yesterday's file.
-    (OUT / "us_top50.yaml").unlink(missing_ok=True)
+    (OUT / "us_top36.yaml").unlink(missing_ok=True)
     report = {
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "runner": "GitHub Actions ubuntu-latest",
@@ -635,7 +641,7 @@ def main():
         "us_egress_confirmed": 0,
         "speed_measured": 0,
         "final_count": 0,
-        "target_count": 50,
+        "target_count": 36,
         "protocol_counts": {},
         "stage_counts": {},
         "notes": [
@@ -856,7 +862,7 @@ def main():
         diverse = export_valid
 
         top, selection_quota = select_protocol_diverse(
-            diverse, target=50, minimum_per_protocol=3
+            diverse, target=36, minimum_per_protocol=3
         )
         report["protocol_selection_minimum"] = 3
         report["protocol_selection_quota"] = selection_quota
@@ -879,9 +885,9 @@ def main():
             "ipv6": False,
             "proxies": clean_nodes,
             "proxy-groups": [
-                {"name": "美国优选50", "type": "select", "proxies": names},
+                {"name": "美国优选36", "type": "select", "proxies": names},
                 {
-                    "name": "美国自动测速50",
+                    "name": "美国自动测速36",
                     "type": "url-test",
                     "proxies": names,
                     "url": "https://www.gstatic.com/generate_204",
@@ -891,7 +897,7 @@ def main():
             ],
             "rules": ["MATCH,美国优选50"],
         }
-        subscription_path = OUT / "us_top50.yaml"
+        subscription_path = OUT / "us_top36.yaml"
         with subscription_path.open("w", encoding="utf-8") as handle:
             yaml.dump(config, handle, Dumper=PlainSafeDumper, allow_unicode=True, sort_keys=False)
 
