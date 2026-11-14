@@ -323,7 +323,7 @@ def collect_public_feeds(groups):
             compact = re.sub(r"\s+", "", raw.strip())
             decoded = base64.b64decode(compact + "=" * (-len(compact) % 4)).decode("utf-8", errors="ignore")
             uris = list(dict.fromkeys(
-                re.findall(r"(?im)^(?:vmess|vless|trojan|ss)://[^\s]+", decoded)
+                re.findall(r"(?im)^(?:vmess|vless|trojan|ss|ssr|snell|hysteria|hysteria2|tuic|anytls|socks5|https?)://[^\s]+", decoded)
             ))
             if uris:
                 sites.append(SiteConfig(
