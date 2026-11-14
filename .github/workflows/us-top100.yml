@@ -1,4 +1,4 @@
-name: US Top 100 Proxies
+name: US Top 20 Proxies
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - '.github/workflows/us-top100.yml'
   workflow_dispatch:
   schedule:
-    # Every Friday at 21:15 China Standard Time (13:15 UTC)
+    # Weekly refresh: Friday 21:15 China Standard Time
     - cron: "15 13 * * 5"
 
 env:
@@ -19,15 +19,16 @@ env:
 permissions:
   contents: read
 
+# A new Top-20 run must not wait behind the previous five-hour job.
 concurrency:
-  group: us-top100
-  cancel-in-progress: false
+  group: us-top20-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    # GitHub-hosted jobs support up to 6 hours. Reserve 5 hours for repeated attempts.
+    # One complete discovery/verification pass per run; upload its report immediately.
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 90
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,69 +47,35 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Repeatedly discover, verify and rank US egress nodes (up to 5 hours)
+      - name: Discover, verify and rank up to 20 US egress nodes
         shell: bash
         run: |
           set -uo pipefail
           mkdir -p output/attempts
-          deadline=$((SECONDS + 18000))
-          attempt=0
-          success=0
-
-          while (( SECONDS < deadline )); do
-            attempt=$((attempt + 1))
-            remaining=$((deadline - SECONDS))
-            attempt_limit=3000
-            if (( remaining < attempt_limit )); then
-              attempt_limit=$remaining
-            fi
-
-            echo "========== ROUND ${attempt}; remaining budget: ${remaining}s =========="
-            set +e
-            timeout --signal=TERM --kill-after=30 "${attempt_limit}s" \
-              python -u tools/us_top100.py 2>&1 | tee "output/attempts/round-${attempt}.log"
-            rc=${PIPESTATUS[0]}
-            set -e
-
-            if [[ -f output/report.json ]]; then
-              cp output/report.json "output/attempts/round-${attempt}-report.json"
-            fi
-
-            if (( rc == 0 )); then
-              success=1
-              echo "SUCCESS on round ${attempt}"
-              break
-            fi
-
-            echo "Round ${attempt} did not produce a verified subscription (exit=${rc})."
-            if (( SECONDS >= deadline )); then
-              break
-            fi
-            echo "Waiting 30 seconds before refreshing sources and trying again..."
-            sleep 30
-          done
-
-          {
-            echo "attempts=${attempt}"
-            echo "success=${success}"
-            echo "time_budget_seconds=18000"
-            echo "finished_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          } | tee output/overnight-summary.txt
-
-          if (( success == 0 )); then
-            echo "No verified US-egress subscription was produced within the five-hour run."
-            exit 1
+          echo "========== SINGLE PASS: US TOP 20 =========="
+          set +e
+          python -u tools/us_top100.py 2>&1 | tee output/attempts/round-1.log
+          rc=${PIPESTATUS[0]}
+          set -e
+          if [[ -f output/report.json ]]; then
+            cp output/report.json output/attempts/round-1-report.json
           fi
+          {
+            echo "target_count=20"
+            echo "exit_code=${rc}"
+            echo "finished_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } | tee output/round-summary.txt
+          exit "${rc}"
 
-      - name: Upload results and all attempt logs
+      - name: Upload this round's report, subscription and logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: us-top100-${{ github.run_number }}
+          name: us-top20-${{ github.run_number }}
           path: |
             output/us_top100.yaml
             output/report.json
-            output/overnight-summary.txt
+            output/round-summary.txt
             output/attempts/
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: 14
