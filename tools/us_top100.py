@@ -84,29 +84,84 @@ def run_alive_check(nodes, clash_bin):
     return alive
 
 
-def locate_us(nodes, reader):
-    us_nodes = []
-    geo_confirmed = 0
+def _country_code(value):
+    value = str(value or "").strip().upper()
+    if value in ("美国", "UNITED STATES", "UNITED STATES OF AMERICA"):
+        return "US"
+    if len(value) == 2 and value.isalpha():
+        return value
+    return ""
+
+
+def _geo_api_probe(proxy, port, reader=None):
+    """Determine the actual proxy egress country without depending on a local MMDB."""
+    name = str(proxy.get("name", ""))
+    votes = []
+    ip_seen = ""
+    # Each request is made through this node's Mihomo listener, never from the runner.
+    endpoints = [
+        ("https://ipwho.is/", "country_code"),
+        ("https://ipapi.co/json/", "country_code"),
+        ("https://ipinfo.io/json", "country"),
+    ]
+    for url, key in endpoints:
+        try:
+            ok, data = location.make_proxy_request(
+                port=port, url=url, max_retries=1, timeout=10, quiet=True
+            )
+            if not ok or not isinstance(data, dict):
+                continue
+            if url.startswith("https://ipwho.is/") and data.get("success") is False:
+                continue
+            code = _country_code(data.get(key))
+            if code:
+                votes.append(code)
+                ip_seen = ip_seen or str(data.get("ip", ""))
+        except Exception as exc:
+            print(f"[geoip-api] {name} {url} failed: {exc}", flush=True)
+
+    # Prefer a two-provider agreement. If only one provider is reachable, retain
+    # its result rather than falsely rejecting every node due to API outages.
+    if not votes:
+        return ProxyQueryResult(proxy=proxy, result=ProxyInfo(name=name), success=False)
+    counts = {code: votes.count(code) for code in set(votes)}
+    country = max(counts, key=counts.get)
+    if counts[country] < 2 and len(votes) > 1:
+        return ProxyQueryResult(proxy=proxy, result=ProxyInfo(name=name), success=False)
+    if ip_seen:
+        proxy["_egress_ip"] = ip_seen
+    proxy["_geo_method"] = "online-api-consensus" if counts[country] >= 2 else "single-online-api"
+    return ProxyQueryResult(
+        proxy=proxy,
+        result=ProxyInfo(name=name, country=country),
+        success=True,
+    )
+
+
+def locate_us(nodes, reader=None):
+    us_nodes, country_confirmed = [], 0
     for index, batch in enumerate(chunks(nodes, BATCH_SIZE), 1):
         print(f"[geoip-egress] batch {index}, nodes={len(batch)}", flush=True)
         results = location.batch_query(
             proxies=batch,
-            func=partial(location.locate_by_ipinfo, reader=reader),
-            num_threads=24,
+            func=partial(_geo_api_probe, reader=reader),
+            num_threads=16,
             show_progress=False,
-            description="Checking proxy egress country",
+            description="Checking actual proxy egress country via independent APIs",
             digits=3,
         )
         for item in results or []:
             if not item or not item.success or not item.result:
                 continue
             country = (item.result.country or "").strip().upper()
+            if country:
+                country_confirmed += 1
             if country in ("美国", "US"):
-                geo_confirmed += 1
                 proxy = item.proxy
                 proxy["name"] = proxy.pop("_original_name", proxy.get("name", "US node"))
                 us_nodes.append(proxy)
-    return us_nodes, geo_confirmed
+    print(f"[geoip-egress] country confirmed={country_confirmed}; US={len(us_nodes)}", flush=True)
+    return us_nodes, country_confirmed
 
 
 def speed_probe(proxy, port):
@@ -343,6 +398,7 @@ def main():
         collected_sites.extend(public_sites)
         report["public_feed_stats"] = public_stats
         report["collected_sites"] = len(collected_sites)
+        report["collected_site_names"] = [str(getattr(site, "name", "")) for site in collected_sites]
         report["sites_by_source"] = {}
         for site in collected_sites or []:
             source = str(getattr(site, "origin", "unknown"))
@@ -362,6 +418,13 @@ def main():
             allow_gmail_alias=False,
             special_protocols=True,
         )
+        report["created_tasks"] = len(tasks)
+        report["task_names"] = [task.name for task in tasks]
+        report["task_input_counts"] = [
+            {"name": task.name, "subscriptions": len(task.nodes.subscribe_list()),
+             "uris": len(task.nodes.uris), "proxies": len(task.nodes.proxies)}
+            for task in tasks
+        ]
         if not tasks:
             raise RuntimeError("No valid subscription tasks were created from the collected public sources")
         task_results = utils.multi_process_run(
@@ -369,7 +432,10 @@ def main():
             tasks=tasks,
         ) or []
         parsed = []
+        report["task_parse_counts"] = []
         for result in task_results:
+            count = len(result[1]) if result and len(result) >= 2 and result[1] else 0
+            report["task_parse_counts"].append({"task_id": result[0] if result else -1, "parsed": count})
             if result and len(result) >= 2 and result[1]:
                 parsed.extend(result[1])
         parsed = [
@@ -408,24 +474,27 @@ def main():
 
         mmdb_dir = OUT / "geoip"
         mmdb_dir.mkdir(exist_ok=True)
-        reader = location.load_mmdb(
-            directory=str(mmdb_dir),
-            repo="Loyalsoldier/geoip",
-            filename="Country.mmdb",
-            update=True,
-        )
-        if not reader:
-            fallback = WORKSPACE / "Country.mmdb"
-            if not fallback.exists():
-                raise RuntimeError("Could not obtain a GeoIP country database")
-            reader = database.Reader(str(fallback))
-
+        # MMDB download is best-effort only. Actual egress country is verified
+        # through independent HTTPS APIs via each proxy, so a broken GitHub
+        # release/API cannot invalidate the whole run.
+        reader = None
+        try:
+            reader = location.load_mmdb(
+                directory=str(mmdb_dir),
+                repo="Loyalsoldier/geoip",
+                filename="Country.mmdb",
+                update=True,
+            )
+        except Exception as exc:
+            print(f"[geoip] optional MMDB unavailable; using online APIs: {exc}", flush=True)
         try:
             us_nodes, confirmed = locate_us(alive, reader)
         finally:
-            reader.close()
+            if reader:
+                reader.close()
         report["egress_country_confirmed"] = confirmed
         report["us_egress_confirmed"] = len(us_nodes)
+        report["geoip_method"] = "independent online APIs through proxy; 2-provider agreement preferred; single provider accepted only when it is the sole responder"
         print(f"[geoip-egress] US confirmed={len(us_nodes)}", flush=True)
         if not us_nodes:
             raise RuntimeError("No live node had a verifiably US egress IP")
