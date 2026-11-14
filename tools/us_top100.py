@@ -591,6 +591,32 @@ def collect_public_feeds(groups):
     except Exception as exc:
         print(f"[public-feeds] Au1rxx fetch/parse failed: {exc}", flush=True)
 
+    # Italy and Japan public country shards; labels are not trusted.
+    for country_code in ("IT", "JP"):
+        try:
+            shard_url = f"https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/by-country/clash-{country_code}.yaml"
+            raw = utils.http_get(url=shard_url, retry=2, timeout=45)
+            data = yaml.safe_load(raw) if raw else {}
+            proxies = data.get("proxies", []) if isinstance(data, dict) else []
+            proxies = [
+                item for item in proxies
+                if isinstance(item, dict)
+                and str(item.get("type", "")).lower() in ALLOWED_TYPES
+                and item.get("server") and item.get("port")
+            ]
+            stats[f"au1rxx_{country_code.lower()}_proxies"] = len(proxies)
+            if proxies:
+                sites.append(SiteConfig(
+                    name=f"public-au1rxx-{country_code.lower()}-shard",
+                    nodes=NodeInput(proxies=proxies),
+                    push_to=push_to,
+                    origin="PUBLIC_FEED",
+                ))
+            print(f"[public-feeds] Au1rxx {country_code} shard: imported {len(proxies)}", flush=True)
+        except Exception as exc:
+            stats[f"au1rxx_{country_code.lower()}_proxies"] = 0
+            print(f"[public-feeds] Au1rxx {country_code} shard failed: {exc}", flush=True)
+
     # Additional independently maintained public feeds. Country labels are never trusted.
     # Every candidate still passes Mihomo, actual egress-country and speed checks.
     extra_feeds = [
