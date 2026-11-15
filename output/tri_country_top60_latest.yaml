@@ -4,114 +4,29 @@ mode: rule
 log-level: warning
 ipv6: false
 proxies:
-- name: US-001 | US-SPEEDNODE 002
-  port: 8443
-  server: 44.248.167.117
-  skip-cert-verify: true
-  tls: true
+- name: US-001 | US-HTTP 002
   type: http
-  udp: true
-- name: US-002 | 美国 | SS | 006
-  type: ss
-  server: 38.143.66.146
-  port: 19999
-  cipher: aes-256-gcm
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  udp: true
-- name: US-003 | TROJAN 007
-  password: f0eb8c92ce8946aaba856569cff1a16b
-  port: 443
-  server: resources.findlocaljobnetworkandbuildcommunityconnections.com
-  skip-cert-verify: true
-  sni: resources.findlocaljobnetworkandbuildcommunityconnections.com
-  type: trojan
-  udp: true
-- client-fingerprint: safari
-  flow: xtls-rprx-vision
-  name: US-004 | VLESS 011
-  network: tcp
-  port: 443
-  reality-opts:
-    public-key: SmgYcFIvvFXW3xh4gvGhIJuQsaZvWkAylcjB6TEddEs
-    short-id: 896f52ba2cfca903
-  server: 47.251.108.158
-  servername: www.cloudflare.com
-  tls: true
-  type: vless
-  udp: true
-  uuid: 975fc322-6e38-434b-a53c-d39fed49b9a9
-- alterId: 0
-  cipher: auto
-  name: US-005 | VMESS 003
-  network: tcp
-  port: 18000
-  server: 84.17.41.2
-  type: vmess
-  udp: true
-  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
-- name: US-006 | 美国 | HYSTERIA2 | 001
-  type: hysteria2
-  server: 66.94.121.46
-  port: 443
-  password: gf1:gfhysteria2024
-  sni: www.broadcom.com
-  skip-cert-verify: true
-  udp: true
-- name: US-007 | PROXYPOOL | 美国 | USA 001
-  server: 137.175.82.44
-  port: 20022
-  type: hysteria
-  auth_str: dongtaiwang.com
-  auth-str: dongtaiwang.com
-  up: '10'
-  down: '50'
-  skip-cert-verify: true
-  alpn:
-  - h3
-  udp: true
-- name: US-008 | 美国 | HYSTERIA2 | 003
-  type: hysteria2
-  server: 192.255.152.147
-  port: 443
-  password: yO8pug5XmwkBXBAjleYIaVt
-  sni: 192.255.152.147
-  skip-cert-verify: true
-  udp: true
-- name: US-009 | TROJAN 001
-  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
-  port: 443
-  server: 167.88.61.198
-  skip-cert-verify: false
-  sni: cdn.browseseniorrolesandenhanceyourcareertoday.com
-  type: trojan
-  udp: true
-- name: US-010 | 美国 | VMESS | 002
-  type: vmess
-  server: 23.150.152.65
-  port: 1270
-  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: true
-  servername: xmfhlpy.com
-- name: US-011 | US-HTTP 007
-  type: http
-  server: 138.199.35.214
+  server: 138.199.35.196
   port: 9002
   udp: true
   tls: true
   skip-cert-verify: true
-  username: 'null'
-  password: 'null'
-- name: US-012 | 美国 | SS | 032
+  password: None
+- name: US-002 | 美国 | SS | 002
   type: ss
   server: 137.184.89.151
   port: 19999
   cipher: aes-256-gcm
   password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
   udp: true
-- name: US-013 | 美国 | VLESS | 001
+- name: US-003 | 美国 | TROJAN | 001
+  type: trojan
+  server: 216.106.186.32
+  port: 443
+  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  udp: true
+  sni: blog.findlocaljobnetworkandbuildcommunityconnections.com
+- name: US-004 | 美国 | VLESS | 001
   type: vless
   server: 147.224.54.25
   port: 2053
@@ -123,86 +38,173 @@ proxies:
   reality-opts:
     public-key: DEFJSLdILrvauMpwtpvFZddadpt3rNtv03Dui2EkmRk
     short-id: '68'
-- alpn:
-  - h3
-  auth-str: github.com/Alvin9999-newpac/fanqiang
-  down: '55'
-  name: US-014 | US-9|1015KB 001
-  port: 22335
-  server: 198.200.57.142
-  skip-cert-verify: true
-  type: hysteria
-  up: '11'
-  x-toolall-mihomo: true
+- name: US-005 | 美国 | VMESS | 001
+  type: vmess
+  server: 23.150.152.65
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
   udp: true
-- name: US-015 | US-HTTP 001
+  tls: true
+  servername: xmfhlpy.com
+- name: US-006 | HYSTERIA2 002
+  password: bce6c821-200d-421f-bf3d-7159e5246ea0
+  port: 33333
+  server: 155.248.209.237
+  skip-cert-verify: true
+  sni: 155.248.209.237
+  type: hysteria2
+  udp: true
+- name: US-007 | 美国-聖荷西 001
+  server: 198.200.57.142
+  port: 22335
+  type: hysteria
+  auth_str: github.com/Alvin9999-newpac/fanqiang
+  auth-str: github.com/Alvin9999-newpac/fanqiang
+  up: '11'
+  down: '55'
+  protocol: udp
+  skip-cert-verify: true
+  alpn:
+  - h3
+  udp: true
+- name: US-008 | 97 ONECLICKVPNKEYS 001
+  password: 4afd4e1b1b0edd429b10d800a1cf64a7
+  port: 8443
+  server: 47.89.232.46
+  skip-cert-verify: true
+  sni: hysteria2.local
+  tls: false
+  type: hysteria2
+  udp: true
+- name: US-009 | 美国 | SS | 006
+  type: ss
+  server: 169.197.142.68
+  port: 19999
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- name: US-010 | US-HTTP 006
   type: http
-  server: 138.199.35.198
+  server: 138.199.35.203
   port: 9002
   udp: true
   tls: true
   skip-cert-verify: true
-- name: US-016 | TROJAN 003
-  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
-  port: 443
-  server: 66.163.114.45
-  skip-cert-verify: false
-  sni: cdn.findconnectwithemployersandbuildprofessionalnetwork.com
+- client-fingerprint: chrome
+  flow: xtls-rprx-vision
+  name: US-011 | VLESS 002
+  network: tcp
+  port: 23576
+  reality-opts:
+    public-key: 1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s
+    short-id: '01'
+  server: ww13.levikogjgfdd.ir
+  servername: fuck.rkn
+  tls: true
+  type: vless
+  udp: true
+  uuid: 48ff2b70-e180-582f-8866-d9a2edeed5f5
+- alterId: 0
+  cipher: auto
+  name: US-012 | VMESS 004
+  network: tcp
+  port: 18000
+  server: 84.17.41.2
+  type: vmess
+  udp: true
+  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
+- name: US-013 | TROJAN 002
+  password: nwilryafgkyvuxauc8pz
+  port: 50875
+  server: 69.164.240.85
+  skip-cert-verify: true
+  sni: 69.164.240.85
   type: trojan
   udp: true
-- name: US-017 | 美国 | SS | 015
-  type: ss
-  server: 38.145.220.193
-  port: 8443
-  cipher: 2022-blake3-aes-128-gcm
-  password: jUbDNsFamcyDfpm+rI3Zyw==
+- type: hysteria
+  name: US-014 | US-美国-IPV 001
+  server: 137.175.82.44
+  port: 20022
+  password: dongtaiwang.com
+  tls: true
+  servername: bing.com
+  sni: bing.com
+  skip-cert-verify: true
+  alpn:
+  - h3
+  up: '11'
+  down: '55'
+  auth-str: dongtaiwang.com
   udp: true
-- name: US-018 | 美国 | VMESS | 003
+- name: US-015 | US-HTTP 009
+  type: http
+  server: 138.199.35.214
+  port: 9002
+  udp: true
+  tls: true
+  skip-cert-verify: true
+  username: 'null'
+  password: 'null'
+- name: US-016 | 美国 | SS | 007
+  type: ss
+  server: 23.150.152.38
+  port: 19999
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- name: US-017 | US-VPNINE 001
+  password: yO8pug5XmwkBXBAjleYIaVt
+  port: 443
+  server: 192.255.152.147
+  skip-cert-verify: true
+  sni: 192.255.152.147
+  tls: false
+  type: hysteria2
+  udp: true
+- name: US-018 | 美国 | VLESS | 003
+  type: vless
+  server: 216.227.161.95
+  port: 7443
+  uuid: 218fd696-e3a2-4c33-b397-a5f13a82969e
+  udp: true
+  tls: true
+  servername: media3.abvphelp.cc
+  client-fingerprint: firefox
+  reality-opts:
+    public-key: uNqGvaJEIFTFQvAxsTDhetPxkIWzJuBtxXsK0yFMYzM
+    short-id: 48d5cf47
+  network: grpc
+  grpc-opts:
+    grpc-service-name: grpc
+- name: US-019 | 美国 | VMESS | 012
   type: vmess
-  server: 129.146.143.80
-  port: 48111
-  uuid: d4603cc2-e0ee-4651-83f5-1db5b7168177
+  server: 167.88.62.51
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
   alterId: 0
   cipher: auto
   udp: true
-- name: US-019 | 美国 | HYSTERIA2 | 005
-  type: hysteria2
-  server: 206.189.229.48
-  port: 443
-  password: YV1sd3tfCZngTtnvRmy7
-  sni: www.microsoft.com
-  skip-cert-verify: true
-  obfs: salamander
-  obfs-password: ZuPf4OcXKvotJdDxlTus
-  udp: true
-- name: US-020 | 美国 | VLESS | 004
-  type: vless
-  server: 216.152.155.189
-  port: 443
-  uuid: dbf3f074-3b18-43f3-b82a-debd8c879c69
-  udp: true
-  flow: xtls-rprx-vision
   tls: true
-  servername: www.apple.com
+  servername: xmfhlpy.com
+- name: US-020 | UNITED STATES 002
+  type: trojan
+  server: 216.152.155.176
+  port: 443
+  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  udp: true
+  sni: 216.152.155.176
   client-fingerprint: chrome
-  reality-opts:
-    public-key: F5BVp5XkY93lll_Ju34lOIE6A1-dx16_frY6eu9Nzzk
-    short-id: fecf2b55bb11bb0d
-- name: IT-001 | IT-HTTP 001
-  type: http
-  server: 95.229.15.89
-  port: 443
-  udp: true
-  tls: true
   skip-cert-verify: true
-- cipher: aes-256-gcm
-  name: IT-002 | SS-IT 001
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+- name: IT-001 | 意大利-MILAN 007
+  server: 202.50.253.36
   port: 19999
-  server: 185.164.175.81
   type: ss
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
   udp: true
-- name: IT-003 | 意大利 | VLESS | 001
+- name: IT-002 | 意大利 | VLESS | 001
   type: vless
   server: 172.213.24.16
   port: 2083
@@ -215,82 +217,98 @@ proxies:
   reality-opts:
     public-key: WbgtxLlo2gmTzB4Wzxgh_U7G97d4ENTS10fYIoujET4
     short-id: 0123456789abcdef
-- name: IT-004 | 意大利-MILAN 008
-  server: 202.50.253.90
-  port: 19999
-  type: ss
-  cipher: aes-256-gcm
+- cipher: aes-256-gcm
+  name: IT-003 | SS-IT 001
   password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  port: 19999
+  server: 185.164.175.81
+  type: ss
   udp: true
-- name: IT-005 | IT-HTTP 002
-  type: http
-  server: 109.116.41.154
+- name: IT-004 | 意大利 | ITA 001
+  server: 83.141.92.190
   port: 443
-  udp: true
+  type: vless
+  uuid: 555b35c4-30f9-40c6-a61a-7f53ab1bea45
   tls: true
-  skip-cert-verify: true
-- name: IT-006 | 意大利-MILAN 005
-  server: 202.50.253.99
+  flow: xtls-rprx-vision
+  reality-opts:
+    public-key: kBTMVLCNE0jjwuJF6H5-65l5Pe0QToS0Hg-9Tmaa7Sk
+    short-id: 1a2b3c4d
+  servername: images.porsche.com
+  client-fingerprint: firefox
+  network: tcp
+  udp: true
+- name: IT-005 | 意大利-MILAN 008
+  server: 202.50.253.54
   port: 19999
   type: ss
   cipher: aes-256-gcm
   password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
   udp: true
-- name: IT-007 | IT-HTTP 003
-  type: http
-  server: 91.243.118.217
-  port: 443
-  udp: true
-  tls: true
-  skip-cert-verify: true
-- name: IT-008 | 意大利-MILAN 003
-  server: 202.50.253.36
-  port: 19999
-  type: ss
-  cipher: aes-256-gcm
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  udp: true
-- name: IT-009 | 意大利-MILAN 001
-  server: 202.50.253.81
-  port: 19999
-  type: ss
-  cipher: aes-256-gcm
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  udp: true
-- name: IT-010 | 意大利-MILAN 002
-  server: 202.50.253.27
-  port: 19999
-  type: ss
-  cipher: aes-256-gcm
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  udp: true
-- name: IT-011 | 意大利-MILAN 004
-  server: 202.50.253.18
-  port: 19999
-  type: ss
-  cipher: aes-256-gcm
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  udp: true
-- name: IT-012 | 意大利-MILAN 006
+- name: IT-006 | 意大利-MILAN 009
   server: 202.50.253.45
   port: 19999
   type: ss
   cipher: aes-256-gcm
   password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
   udp: true
-- name: IT-013 | 意大利-MILAN 007
+- name: IT-007 | 意大利-MILAN 006
+  server: 202.50.253.81
+  port: 19999
+  type: ss
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- name: IT-008 | 意大利-MILAN 004
+  server: 202.50.253.63
+  port: 19999
+  type: ss
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- type: ss
+  name: IT-009 | IT-意大利-IPV 001
+  server: 202.50.253.27
+  port: 19999
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  cipher: aes-256-gcm
+  tls: false
+  skip-cert-verify: false
+  udp: true
+- name: IT-010 | 意大利-MILAN 005
+  server: 202.50.253.90
+  port: 19999
+  type: ss
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- name: IT-011 | 意大利-MILAN 002
+  server: 202.50.253.99
+  port: 19999
+  type: ss
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- name: IT-012 | 意大利-MILAN 003
+  server: 202.50.253.18
+  port: 19999
+  type: ss
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- name: IT-013 | 意大利-MILAN 001
   server: 202.50.253.72
   port: 19999
   type: ss
   cipher: aes-256-gcm
   password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
   udp: true
-- name: IT-014 | 意大利 | SS | 004
+- name: IT-014 | 意大利 | SS | 001
   type: ss
   server: 91.201.65.122
-  port: 9070
+  port: 9065
   cipher: aes-256-cfb
-  password: bf7v334KKDV3YDhH
+  password: PeHSHm5SqEjBuEXE
   udp: true
 - name: JP-001 | 日本 | SS | 002
   type: ss
@@ -299,90 +317,89 @@ proxies:
   cipher: aes-128-gcm
   password: Bwlqh7GcFB
   udp: true
-- name: JP-002 | 未知地区 | VLESS | 001
+- name: JP-002 | 日本 | VLESS | 001
   type: vless
-  server: 155.248.175.201
-  port: 23169
-  uuid: 7318caa1-93d1-4a9d-c481-504599902700
+  server: 103.75.118.228
+  port: 12683
+  uuid: 814bd064-544d-4255-a070-5705c03f6da9
   udp: true
   flow: xtls-rprx-vision
   tls: true
-  servername: djj.zjlo.top
-  client-fingerprint: firefox
-- name: JP-003 | 日本 | VMESS | 001
-  type: vmess
-  server: 168.110.63.247
-  port: 8081
-  uuid: c3bde296-8e44-4b8c-a325-577d5b3cc7c8
-  alterId: 0
-  cipher: auto
+  servername: www.apple.com
+  client-fingerprint: chrome
+  reality-opts:
+    public-key: k2hPp0tTW0Da-HK94wYpSCLbuK44LfGqC2MSJIM1Ti0
+    short-id: 48050fab
+- name: JP-003 | HYSTERIA2 001
+  password: 184cdec28da5a09450803c8debcd2cc9
+  port: 50160
+  server: 138.3.208.26
+  skip-cert-verify: true
+  sni: 138.3.208.26
+  type: hysteria2
   udp: true
-  network: ws
-  ws-opts:
-    path: /vless
-- name: JP-004 | HYSTERIA2 002
+- name: JP-004 | 台湾 | TWN 001
+  password: b5bf323d-cccd-4e7b-9ecd-2ab4943b7396
+  port: 443
+  server: jp.gosthk.site
+  skip-cert-verify: true
+  sni: jp.gosthk.site
+  type: anytls
+  udp: true
+- name: JP-005 | HYSTERIA2 003
   password: u63SxILNwtrQZ7Y1ZrFaZfsA
   port: 8443
   server: 8.211.175.236
   skip-cert-verify: true
-  sni: ''
+  sni: 8.211.175.236
   type: hysteria2
   udp: true
-- name: JP-005 | HYSTERIA2 001
-  password: usqmqUKJFIlCmvkCNSY64L3k
-  port: 443
-  server: 8.209.247.109
+- name: JP-006 | 日本 | JPN 001
+  password: 9922ea3a-7314-4af5-a4cb-eb68a9b94fca
+  port: 2052
+  server: forwarded.frnhk.xyz
   skip-cert-verify: true
-  sni: bing.com
-  type: hysteria2
+  sni: jp2.gosthk.site
+  type: anytls
   udp: true
-- client-fingerprint: firefox
-  encryption: none
-  name: JP-006 | VLESS-JP-1... 001
-  network: ws
-  port: 443
-  server: 104.21.70.228
-  servername: jp3.yohototo.top
-  skip-cert-verify: false
-  tls: true
+- name: JP-007 | 日本 | VLESS | 004
   type: vless
+  server: 45.153.245.181
+  port: 443
   uuid: 4e4f1f70-5e56-4a76-bb9d-db087f4690c4
+  udp: true
+  tls: true
+  servername: jp3.yohototo.top
+  client-fingerprint: unsafe
+  network: ws
   ws-opts:
+    path: /tyxyws
     headers:
       Host: jp3.yohototo.top
-    path: /tyxyws
-  udp: true
-- name: JP-007 | 日本-东京 001
-  server: 154.36.158.197
-  port: 8388
-  type: ss
-  cipher: aes-256-gcm
-  password: BeaUf9c0AEWH40Pu
-  udp: true
 proxy-groups:
 - name: 美国优选20
   type: select
   proxies: &id001
-  - US-001 | US-SPEEDNODE 002
-  - US-002 | 美国 | SS | 006
-  - US-003 | TROJAN 007
-  - US-004 | VLESS 011
-  - US-005 | VMESS 003
-  - US-006 | 美国 | HYSTERIA2 | 001
-  - US-007 | PROXYPOOL | 美国 | USA 001
-  - US-008 | 美国 | HYSTERIA2 | 003
-  - US-009 | TROJAN 001
-  - US-010 | 美国 | VMESS | 002
-  - US-011 | US-HTTP 007
-  - US-012 | 美国 | SS | 032
-  - US-013 | 美国 | VLESS | 001
-  - US-014 | US-9|1015KB 001
-  - US-015 | US-HTTP 001
-  - US-016 | TROJAN 003
-  - US-017 | 美国 | SS | 015
-  - US-018 | 美国 | VMESS | 003
-  - US-019 | 美国 | HYSTERIA2 | 005
-  - US-020 | 美国 | VLESS | 004
+  - US-001 | US-HTTP 002
+  - US-002 | 美国 | SS | 002
+  - US-003 | 美国 | TROJAN | 001
+  - US-004 | 美国 | VLESS | 001
+  - US-005 | 美国 | VMESS | 001
+  - US-006 | HYSTERIA2 002
+  - US-007 | 美国-聖荷西 001
+  - US-008 | 97 ONECLICKVPNKEYS 001
+  - US-009 | 美国 | SS | 006
+  - US-010 | US-HTTP 006
+  - US-011 | VLESS 002
+  - US-012 | VMESS 004
+  - US-013 | TROJAN 002
+  - US-014 | US-美国-IPV 001
+  - US-015 | US-HTTP 009
+  - US-016 | 美国 | SS | 007
+  - US-017 | US-VPNINE 001
+  - US-018 | 美国 | VLESS | 003
+  - US-019 | 美国 | VMESS | 012
+  - US-020 | UNITED STATES 002
 - name: 美国自动测速
   type: url-test
   proxies: *id001
@@ -392,20 +409,20 @@ proxy-groups:
 - name: 意大利优选14
   type: select
   proxies: &id002
-  - IT-001 | IT-HTTP 001
-  - IT-002 | SS-IT 001
-  - IT-003 | 意大利 | VLESS | 001
-  - IT-004 | 意大利-MILAN 008
-  - IT-005 | IT-HTTP 002
-  - IT-006 | 意大利-MILAN 005
-  - IT-007 | IT-HTTP 003
-  - IT-008 | 意大利-MILAN 003
-  - IT-009 | 意大利-MILAN 001
-  - IT-010 | 意大利-MILAN 002
-  - IT-011 | 意大利-MILAN 004
-  - IT-012 | 意大利-MILAN 006
-  - IT-013 | 意大利-MILAN 007
-  - IT-014 | 意大利 | SS | 004
+  - IT-001 | 意大利-MILAN 007
+  - IT-002 | 意大利 | VLESS | 001
+  - IT-003 | SS-IT 001
+  - IT-004 | 意大利 | ITA 001
+  - IT-005 | 意大利-MILAN 008
+  - IT-006 | 意大利-MILAN 009
+  - IT-007 | 意大利-MILAN 006
+  - IT-008 | 意大利-MILAN 004
+  - IT-009 | IT-意大利-IPV 001
+  - IT-010 | 意大利-MILAN 005
+  - IT-011 | 意大利-MILAN 002
+  - IT-012 | 意大利-MILAN 003
+  - IT-013 | 意大利-MILAN 001
+  - IT-014 | 意大利 | SS | 001
 - name: 意大利自动测速
   type: url-test
   proxies: *id002
@@ -416,12 +433,12 @@ proxy-groups:
   type: select
   proxies: &id003
   - JP-001 | 日本 | SS | 002
-  - JP-002 | 未知地区 | VLESS | 001
-  - JP-003 | 日本 | VMESS | 001
-  - JP-004 | HYSTERIA2 002
-  - JP-005 | HYSTERIA2 001
-  - JP-006 | VLESS-JP-1... 001
-  - JP-007 | 日本-东京 001
+  - JP-002 | 日本 | VLESS | 001
+  - JP-003 | HYSTERIA2 001
+  - JP-004 | 台湾 | TWN 001
+  - JP-005 | HYSTERIA2 003
+  - JP-006 | 日本 | JPN 001
+  - JP-007 | 日本 | VLESS | 004
 - name: 日本自动测速
   type: url-test
   proxies: *id003
@@ -431,47 +448,47 @@ proxy-groups:
 - name: 三国优选41
   type: select
   proxies: &id004
-  - US-001 | US-SPEEDNODE 002
-  - US-002 | 美国 | SS | 006
-  - US-003 | TROJAN 007
-  - US-004 | VLESS 011
-  - US-005 | VMESS 003
-  - US-006 | 美国 | HYSTERIA2 | 001
-  - US-007 | PROXYPOOL | 美国 | USA 001
-  - US-008 | 美国 | HYSTERIA2 | 003
-  - US-009 | TROJAN 001
-  - US-010 | 美国 | VMESS | 002
-  - US-011 | US-HTTP 007
-  - US-012 | 美国 | SS | 032
-  - US-013 | 美国 | VLESS | 001
-  - US-014 | US-9|1015KB 001
-  - US-015 | US-HTTP 001
-  - US-016 | TROJAN 003
-  - US-017 | 美国 | SS | 015
-  - US-018 | 美国 | VMESS | 003
-  - US-019 | 美国 | HYSTERIA2 | 005
-  - US-020 | 美国 | VLESS | 004
-  - IT-001 | IT-HTTP 001
-  - IT-002 | SS-IT 001
-  - IT-003 | 意大利 | VLESS | 001
-  - IT-004 | 意大利-MILAN 008
-  - IT-005 | IT-HTTP 002
-  - IT-006 | 意大利-MILAN 005
-  - IT-007 | IT-HTTP 003
-  - IT-008 | 意大利-MILAN 003
-  - IT-009 | 意大利-MILAN 001
-  - IT-010 | 意大利-MILAN 002
-  - IT-011 | 意大利-MILAN 004
-  - IT-012 | 意大利-MILAN 006
-  - IT-013 | 意大利-MILAN 007
-  - IT-014 | 意大利 | SS | 004
+  - US-001 | US-HTTP 002
+  - US-002 | 美国 | SS | 002
+  - US-003 | 美国 | TROJAN | 001
+  - US-004 | 美国 | VLESS | 001
+  - US-005 | 美国 | VMESS | 001
+  - US-006 | HYSTERIA2 002
+  - US-007 | 美国-聖荷西 001
+  - US-008 | 97 ONECLICKVPNKEYS 001
+  - US-009 | 美国 | SS | 006
+  - US-010 | US-HTTP 006
+  - US-011 | VLESS 002
+  - US-012 | VMESS 004
+  - US-013 | TROJAN 002
+  - US-014 | US-美国-IPV 001
+  - US-015 | US-HTTP 009
+  - US-016 | 美国 | SS | 007
+  - US-017 | US-VPNINE 001
+  - US-018 | 美国 | VLESS | 003
+  - US-019 | 美国 | VMESS | 012
+  - US-020 | UNITED STATES 002
+  - IT-001 | 意大利-MILAN 007
+  - IT-002 | 意大利 | VLESS | 001
+  - IT-003 | SS-IT 001
+  - IT-004 | 意大利 | ITA 001
+  - IT-005 | 意大利-MILAN 008
+  - IT-006 | 意大利-MILAN 009
+  - IT-007 | 意大利-MILAN 006
+  - IT-008 | 意大利-MILAN 004
+  - IT-009 | IT-意大利-IPV 001
+  - IT-010 | 意大利-MILAN 005
+  - IT-011 | 意大利-MILAN 002
+  - IT-012 | 意大利-MILAN 003
+  - IT-013 | 意大利-MILAN 001
+  - IT-014 | 意大利 | SS | 001
   - JP-001 | 日本 | SS | 002
-  - JP-002 | 未知地区 | VLESS | 001
-  - JP-003 | 日本 | VMESS | 001
-  - JP-004 | HYSTERIA2 002
-  - JP-005 | HYSTERIA2 001
-  - JP-006 | VLESS-JP-1... 001
-  - JP-007 | 日本-东京 001
+  - JP-002 | 日本 | VLESS | 001
+  - JP-003 | HYSTERIA2 001
+  - JP-004 | 台湾 | TWN 001
+  - JP-005 | HYSTERIA2 003
+  - JP-006 | 日本 | JPN 001
+  - JP-007 | 日本 | VLESS | 004
 - name: 三国自动测速
   type: url-test
   proxies: *id004
