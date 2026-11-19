@@ -114,9 +114,9 @@ s = s.replace(old, new, 1)
 start = s.index("订阅内容 = 其他节点LINK + 完整优选IP.map((原始地址, 节点序号) => {")
 end = s.index("}).filter(item => item !== null).join('\\n');", start)
 section = s[start:end]
-section = section.replace("return \`\${协议类型}://\${btoa(", "return \`\${当前协议类型}://\${btoa(")
-section = section.replace("return \`\${协议类型}://00000000-", "return \`\${当前协议类型}://00000000-")
-if "return \`\${当前协议类型}://" not in section:
+section = section.replace(r"return `${协议类型}://", r"return `${当前协议类型}://")
+section = section.replace(r"return `${协议类型}://", r"return `${当前协议类型}://")
+if "return `${当前协议类型}://" not in section:
     raise SystemExit("PATCH FAILED: link protocol substitution did not apply")
 s = s[:start] + section + s[end:]
 
