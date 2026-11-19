@@ -1,0 +1,68 @@
+name: Build EdgeTunnel multi-protocol ZIP
+
+on:
+  push:
+    branches:
+      - edgetunnel-multiproto-build
+    paths:
+      - ".github/workflows/build-edgetunnel-multiproto.yml"
+      - "tools/patch_edgetunnel.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout builder
+        uses: actions/checkout@v4
+
+      - name: Download upstream EdgeTunnel source
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 \
+            https://codeload.github.com/cmliu/edgetunnel/zip/refs/heads/main \
+            -o upstream.zip
+          mkdir upstream
+          unzip -q upstream.zip -d upstream
+          SRC="$(find upstream -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+          test -n "$SRC"
+          cp -a "$SRC"/. ./dist/
+
+      - name: Apply multi-protocol and country selector patch
+        run: |
+          set -euo pipefail
+          python tools/patch_edgetunnel.py
+          node --check dist/_worker.js
+
+      - name: Package independent ZIP
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          cp -a dist/. release/edgetunnel-multiproto/
+          cat > release/edgetunnel-multiproto/BUILD-NOTES.txt <<'EOF'
+          EdgeTunnel multi-protocol build
+          Source: https://github.com/cmliu/edgetunnel
+          Protocols generated in one mixed subscription: VLESS, Trojan, Shadowsocks
+          Country quotas: US 20, JP 5, IT 5, VN 5, SG 5
+          Maximum output: 40 nodes. If the source pool or IP geolocation API cannot
+          supply the full quota, fewer nodes are emitted; no placeholder nodes are fabricated.
+          Client: use the /sub endpoint with target=clash for Clash/Mihomo-compatible YAML.
+          This ZIP is an independent build; it does not deploy or change any Cloudflare project.
+          EOF
+          cd release
+          zip -qr ../edgetunnel-multiproto-40nodes.zip edgetunnel-multiproto
+          cd ..
+          sha256sum edgetunnel-multiproto-40nodes.zip > edgetunnel-multiproto-40nodes.zip.sha256
+
+      - name: Upload ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: edgetunnel-multiproto-40nodes
+          path: |
+            edgetunnel-multiproto-40nodes.zip
+            edgetunnel-multiproto-40nodes.zip.sha256
+          if-no-files-found: error
+          retention-days: 14
