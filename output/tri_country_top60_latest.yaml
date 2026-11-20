@@ -11,14 +11,14 @@ proxies:
   tls: true
   type: http
   udp: true
-- cipher: aes-256-gcm
-  name: US-002 | SHADOWSOCKS 010
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  port: 19999
-  server: 185.230.230.18
+- name: US-002 | UNITED STATES 026
   type: ss
+  server: 67.220.73.178
+  port: 19999
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
   udp: true
-- name: US-003 | TROJAN 001
+- name: US-003 | TROJAN 002
   password: nwilryafgkyvuxauc8pz
   port: 50875
   server: 69.164.240.85
@@ -26,23 +26,23 @@ proxies:
   sni: ''
   type: trojan
   udp: true
-- client-fingerprint: firefox
+- client-fingerprint: random
   flow: xtls-rprx-vision
-  name: US-004 | VLESS 010
+  name: US-004 | VLESS 002
   network: tcp
   port: 443
   reality-opts:
     public-key: e2RLf57Li_-MDZGE9ss1BWPgP54mqRb5PfXhW2jcVVg
     short-id: c39cc7310a
-  server: 169.40.42.168
+  server: 169.40.42.74
   servername: yahoo.com
   tls: true
   type: vless
   udp: true
   uuid: d65cc14c-f53f-4fe2-b262-97856601319c
-- name: US-005 | UNITED STATES 016
+- name: US-005 | UNITED STATES 002
   type: vmess
-  server: 67.220.95.49
+  server: 38.128.66.212
   port: 1270
   uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
   alterId: 0
@@ -50,7 +50,7 @@ proxies:
   udp: true
   tls: true
   servername: xmfhlpy.com
-- name: US-006 | UNITED STATES 001
+- name: US-006 | UNITED STATES 017
   type: hysteria2
   server: 206.189.229.48
   port: 443
@@ -60,69 +60,60 @@ proxies:
   obfs: salamander
   obfs-password: ZuPf4OcXKvotJdDxlTus
   udp: true
-- type: hysteria
-  name: US-007 | US-美国-IPV 001
-  server: 38.6.222.130
-  port: 11008
-  password: dongtaiwang.com
-  tls: true
-  servername: bing.com
-  sni: bing.com
-  skip-cert-verify: true
-  alpn:
-  - h3
-  up: '11'
-  down: '55'
-  auth-str: dongtaiwang.com
-  udp: true
-- name: US-008 | DE-ANYTLS 001
-  type: anytls
+- name: US-007 | 美国 | USA 001
   server: sdf65h46wr.df6h451rh.xin
   port: 443
-  udp: true
+  type: anytls
   password: 0324fbc29561
-  client-fingerprint: chrome
+  udp: true
   sni: images.ctfassets.net
   skip-cert-verify: true
-- cipher: aes-128-gcm
-  name: US-009 | SHADOWSOCKS 003
-  password: shadowsocks
-  port: 443
-  server: 37.19.198.244
-  type: ss
+- name: US-008 | UNITED STATES 010
+  type: vmess
+  server: 38.128.66.249
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
   udp: true
-- client-fingerprint: chrome
+  tls: true
+  servername: xmfhlpy.com
+- name: US-009 | UNITED STATES 004
+  type: ss
+  server: 167.17.67.171
+  port: 19999
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- client-fingerprint: ios
   flow: xtls-rprx-vision
-  name: US-010 | VLESS 006
+  name: US-010 | VLESS 001
   network: tcp
   port: 443
   reality-opts:
     public-key: e2RLf57Li_-MDZGE9ss1BWPgP54mqRb5PfXhW2jcVVg
     short-id: c39cc7310a
-  server: 169.40.42.89
+  server: 169.40.42.90
   servername: yahoo.com
   tls: true
   type: vless
   udp: true
   uuid: d65cc14c-f53f-4fe2-b262-97856601319c
-- alterId: 0
-  cipher: auto
-  name: US-011 | VMESS 002
-  network: tcp
-  port: 18000
-  server: 67.220.95.3
-  type: vmess
-  udp: true
-  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
-- name: US-012 | UNITED STATES 004
+- name: US-011 | UNITED STATES 008
   type: trojan
-  server: 66.163.122.25
+  server: 66.163.122.113
   port: 443
   password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
   udp: true
-  sni: cdn.searchnationwidecareerchangehelperandguidancetoday.com
-  client-fingerprint: chrome
-- name: US-013 | UNITED STATES 009
+  sni: api.searchnationwidecareerchangehelperandguidancetoday.com
+- name: US-012 | US-HTTP 003
+  type: http
+  server: 162.244.227.36
+  port: 443
+  udp: true
+  tls: true
+  skip-cert-verify: true
+- name: US-013 | UNITED STATES 007
   type: hysteria2
   server: 34.24.25.1
   port: 443
@@ -130,23 +121,26 @@ proxies:
   sni: bing.com
   skip-cert-verify: true
   udp: true
-- name: US-014 | US-HTTP 004
-  type: http
-  server: 71.43.26.234
-  port: 443
+- name: US-014 | UNITED STATES 011
+  type: vmess
+  server: 167.88.62.51
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
   udp: true
   tls: true
-  skip-cert-verify: true
-- cipher: aes-128-gcm
-  name: US-015 | SHADOWSOCKS 008
-  password: shadowsocks
-  port: 443
-  server: 37.19.198.236
+  servername: xmfhlpy.com
+- name: US-015 | UNITED STATES 002
   type: ss
+  server: 38.128.66.32
+  port: 19999
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
   udp: true
 - client-fingerprint: chrome
   flow: xtls-rprx-vision
-  name: US-016 | VLESS 009
+  name: US-016 | VLESS 010
   network: tcp
   port: 443
   reality-opts:
@@ -158,24 +152,15 @@ proxies:
   type: vless
   udp: true
   uuid: d65cc14c-f53f-4fe2-b262-97856601319c
-- name: US-017 | UNITED STATES 034
-  type: vmess
-  server: 38.91.100.69
-  port: 1270
-  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: true
-  servername: xmfhlpy.com
-- name: US-018 | UNITED STATES 005
-  type: trojan
-  server: 170.101.101.237
-  port: 443
+- name: US-017 | TROJAN 001
   password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  port: 443
+  server: 167.88.61.198
+  skip-cert-verify: false
+  sni: cdn.browseseniorrolesandenhanceyourcareertoday.com
+  type: trojan
   udp: true
-  sni: cdn.explorecreativejobsandenhanceyourcareerportfolio.com
-- name: US-019 | UNITED STATES 010
+- name: US-018 | UNITED STATES 013
   type: hysteria2
   server: 66.94.121.46
   port: 443
@@ -183,106 +168,56 @@ proxies:
   sni: www.broadcom.com
   skip-cert-verify: true
   udp: true
-- name: US-020 | US-HTTP 003
+- name: US-019 | US-HTTP 001
   type: http
-  server: 162.244.227.36
+  server: 71.43.26.234
   port: 443
   udp: true
   tls: true
   skip-cert-verify: true
-- name: IT-001 | IT-HTTP 001
+- name: US-020 | UNITED STATES 017
+  type: ss
+  server: 167.88.62.203
+  port: 19999
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- name: IT-001 | IT-HTTP 002
   type: http
   server: 109.116.41.154
   port: 443
   udp: true
   tls: true
   skip-cert-verify: true
-- cipher: aes-256-gcm
-  name: IT-002 | 意大利 | ITA 004
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  port: 19999
-  server: 202.50.253.81
-  type: ss
-  udp: true
-- cipher: aes-256-gcm
-  name: IT-003 | 意大利 | ITA 001
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  port: 19999
-  server: 202.50.253.72
-  type: ss
-  udp: true
-- name: IT-004 | 新西兰 001
-  server: 202.50.253.54
-  port: 19999
-  type: ss
-  cipher: aes-256-gcm
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  udp: true
-- cipher: aes-256-gcm
-  name: IT-005 | SS-IT-1619... 001
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  port: 19999
-  server: 202.50.253.90
-  type: ss
-  udp: true
-- cipher: aes-256-gcm
-  name: IT-006 | 意大利 | ITA 002
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  port: 19999
-  server: 202.50.253.36
-  type: ss
-  udp: true
-- name: IT-007 | 新西兰 002
-  server: 202.50.253.18
-  port: 19999
-  type: ss
-  cipher: aes-256-gcm
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  udp: true
-- name: IT-008 | 新西兰 003
-  server: 202.50.253.63
-  port: 19999
-  type: ss
-  cipher: aes-256-gcm
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  udp: true
-- cipher: aes-256-gcm
-  name: IT-009 | SS-IT 001
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  port: 19999
-  server: 185.164.175.81
-  type: ss
-  udp: true
-- cipher: aes-256-gcm
-  name: IT-010 | 意大利 | ITA 003
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
-  port: 19999
-  server: 202.50.253.99
-  type: ss
-  udp: true
-- name: IT-011 | ITALY 001
+- name: IT-002 | ITALY 001
   type: ss
   server: 91.201.65.122
   port: 9074
   cipher: aes-256-cfb
   password: p5wSkb2uM3pKSS3j
   udp: true
+- cipher: chacha20-ietf-poly1305
+  name: IT-003 | SS-IT 001
+  password: mx81glqbtlwuhcjo
+  port: 8080
+  server: 57.131.4.13
+  type: ss
+  udp: true
+- name: IT-004 | IT-HTTP 001
+  type: http
+  server: 91.243.118.217
+  port: 443
+  udp: true
+  tls: true
+  skip-cert-verify: true
 - cipher: aes-128-gcm
-  name: JP-001 | SS-JP 004
+  name: JP-001 | SS-JP 002
   password: shadowsocks
   port: 443
-  server: 149.22.87.241
+  server: 149.22.87.240
   type: ss
   udp: true
 - name: JP-002 | HYSTERIA2 001
-  password: u63SxILNwtrQZ7Y1ZrFaZfsA
-  port: 8443
-  server: 8.211.175.236
-  skip-cert-verify: true
-  sni: ''
-  type: hysteria2
-  udp: true
-- name: JP-003 | HYSTERIA2 002
   password: 184cdec28da5a09450803c8debcd2cc9
   port: 50160
   server: 138.3.208.26
@@ -291,152 +226,116 @@ proxies:
   type: hysteria2
   udp: true
 - cipher: aes-128-gcm
-  name: JP-004 | SS-JP 003
+  name: JP-003 | SS-JP 003
   password: shadowsocks
   port: 443
-  server: 149.22.87.240
+  server: 149.22.87.241
   type: ss
   udp: true
+- name: JP-004 | HYSTERIA2 002
+  password: u63SxILNwtrQZ7Y1ZrFaZfsA
+  port: 8443
+  server: 8.211.175.236
+  skip-cert-verify: true
+  sni: ''
+  type: hysteria2
+  udp: true
 - cipher: aes-128-gcm
-  name: JP-005 | SS-JP 002
+  name: JP-005 | SS-JP 001
   password: shadowsocks
   port: 443
   server: 149.22.87.204
   type: ss
-  udp: true
-- name: JP-006 | 218802 | TELEGRAM 001
-  password: oracle_hy2_pass_2026
-  port: 8443
-  server: 129.225.181.46
-  skip-cert-verify: true
-  sni: bing.com
-  tls: false
-  type: hysteria2
-  udp: true
-- cipher: aes-256-gcm
-  name: JP-007 | SS-JP 001
-  password: 3eOFeNssde7PYYMv
-  port: 80
-  server: 84.247.155.196
-  type: ss
-  udp: true
-- name: JP-008 | HYSTERIA2 003
-  password: usqmqUKJFIlCmvkCNSY64L3k
-  port: 443
-  server: 8.209.247.109
-  skip-cert-verify: true
-  sni: bing.com
-  type: hysteria2
   udp: true
 proxy-groups:
 - name: 美国优选20
   type: select
   proxies: &id001
   - US-001 | US-SPEEDNODE 001
-  - US-002 | SHADOWSOCKS 010
-  - US-003 | TROJAN 001
-  - US-004 | VLESS 010
-  - US-005 | UNITED STATES 016
-  - US-006 | UNITED STATES 001
-  - US-007 | US-美国-IPV 001
-  - US-008 | DE-ANYTLS 001
-  - US-009 | SHADOWSOCKS 003
-  - US-010 | VLESS 006
-  - US-011 | VMESS 002
-  - US-012 | UNITED STATES 004
-  - US-013 | UNITED STATES 009
-  - US-014 | US-HTTP 004
-  - US-015 | SHADOWSOCKS 008
-  - US-016 | VLESS 009
-  - US-017 | UNITED STATES 034
-  - US-018 | UNITED STATES 005
-  - US-019 | UNITED STATES 010
-  - US-020 | US-HTTP 003
+  - US-002 | UNITED STATES 026
+  - US-003 | TROJAN 002
+  - US-004 | VLESS 002
+  - US-005 | UNITED STATES 002
+  - US-006 | UNITED STATES 017
+  - US-007 | 美国 | USA 001
+  - US-008 | UNITED STATES 010
+  - US-009 | UNITED STATES 004
+  - US-010 | VLESS 001
+  - US-011 | UNITED STATES 008
+  - US-012 | US-HTTP 003
+  - US-013 | UNITED STATES 007
+  - US-014 | UNITED STATES 011
+  - US-015 | UNITED STATES 002
+  - US-016 | VLESS 010
+  - US-017 | TROJAN 001
+  - US-018 | UNITED STATES 013
+  - US-019 | US-HTTP 001
+  - US-020 | UNITED STATES 017
 - name: 美国自动测速
   type: url-test
   proxies: *id001
   url: https://www.gstatic.com/generate_204
   interval: 300
   tolerance: 100
-- name: 意大利优选11
+- name: 意大利优选4
   type: select
   proxies: &id002
-  - IT-001 | IT-HTTP 001
-  - IT-002 | 意大利 | ITA 004
-  - IT-003 | 意大利 | ITA 001
-  - IT-004 | 新西兰 001
-  - IT-005 | SS-IT-1619... 001
-  - IT-006 | 意大利 | ITA 002
-  - IT-007 | 新西兰 002
-  - IT-008 | 新西兰 003
-  - IT-009 | SS-IT 001
-  - IT-010 | 意大利 | ITA 003
-  - IT-011 | ITALY 001
+  - IT-001 | IT-HTTP 002
+  - IT-002 | ITALY 001
+  - IT-003 | SS-IT 001
+  - IT-004 | IT-HTTP 001
 - name: 意大利自动测速
   type: url-test
   proxies: *id002
   url: https://www.gstatic.com/generate_204
   interval: 300
   tolerance: 100
-- name: 日本优选8
+- name: 日本优选5
   type: select
   proxies: &id003
-  - JP-001 | SS-JP 004
+  - JP-001 | SS-JP 002
   - JP-002 | HYSTERIA2 001
-  - JP-003 | HYSTERIA2 002
-  - JP-004 | SS-JP 003
-  - JP-005 | SS-JP 002
-  - JP-006 | 218802 | TELEGRAM 001
-  - JP-007 | SS-JP 001
-  - JP-008 | HYSTERIA2 003
+  - JP-003 | SS-JP 003
+  - JP-004 | HYSTERIA2 002
+  - JP-005 | SS-JP 001
 - name: 日本自动测速
   type: url-test
   proxies: *id003
   url: https://www.gstatic.com/generate_204
   interval: 300
   tolerance: 100
-- name: 三国优选39
+- name: 三国优选29
   type: select
   proxies: &id004
   - US-001 | US-SPEEDNODE 001
-  - US-002 | SHADOWSOCKS 010
-  - US-003 | TROJAN 001
-  - US-004 | VLESS 010
-  - US-005 | UNITED STATES 016
-  - US-006 | UNITED STATES 001
-  - US-007 | US-美国-IPV 001
-  - US-008 | DE-ANYTLS 001
-  - US-009 | SHADOWSOCKS 003
-  - US-010 | VLESS 006
-  - US-011 | VMESS 002
-  - US-012 | UNITED STATES 004
-  - US-013 | UNITED STATES 009
-  - US-014 | US-HTTP 004
-  - US-015 | SHADOWSOCKS 008
-  - US-016 | VLESS 009
-  - US-017 | UNITED STATES 034
-  - US-018 | UNITED STATES 005
-  - US-019 | UNITED STATES 010
-  - US-020 | US-HTTP 003
-  - IT-001 | IT-HTTP 001
-  - IT-002 | 意大利 | ITA 004
-  - IT-003 | 意大利 | ITA 001
-  - IT-004 | 新西兰 001
-  - IT-005 | SS-IT-1619... 001
-  - IT-006 | 意大利 | ITA 002
-  - IT-007 | 新西兰 002
-  - IT-008 | 新西兰 003
-  - IT-009 | SS-IT 001
-  - IT-010 | 意大利 | ITA 003
-  - IT-011 | ITALY 001
-  - JP-001 | SS-JP 004
+  - US-002 | UNITED STATES 026
+  - US-003 | TROJAN 002
+  - US-004 | VLESS 002
+  - US-005 | UNITED STATES 002
+  - US-006 | UNITED STATES 017
+  - US-007 | 美国 | USA 001
+  - US-008 | UNITED STATES 010
+  - US-009 | UNITED STATES 004
+  - US-010 | VLESS 001
+  - US-011 | UNITED STATES 008
+  - US-012 | US-HTTP 003
+  - US-013 | UNITED STATES 007
+  - US-014 | UNITED STATES 011
+  - US-015 | UNITED STATES 002
+  - US-016 | VLESS 010
+  - US-017 | TROJAN 001
+  - US-018 | UNITED STATES 013
+  - US-019 | US-HTTP 001
+  - US-020 | UNITED STATES 017
+  - IT-001 | IT-HTTP 002
+  - IT-002 | ITALY 001
+  - IT-003 | SS-IT 001
+  - IT-004 | IT-HTTP 001
+  - JP-001 | SS-JP 002
   - JP-002 | HYSTERIA2 001
-  - JP-003 | HYSTERIA2 002
-  - JP-004 | SS-JP 003
-  - JP-005 | SS-JP 002
-  - JP-006 | 218802 | TELEGRAM 001
-  - JP-007 | SS-JP 001
-  - JP-008 | HYSTERIA2 003
+  - JP-003 | SS-JP 003
+  - JP-004 | HYSTERIA2 002
+  - JP-005 | SS-JP 001
 - name: 三国自动测速
   type: url-test
   proxies: *id004
@@ -444,4 +343,4 @@ proxy-groups:
   interval: 300
   tolerance: 100
 rules:
-- MATCH,三国优选39
+- MATCH,三国优选29
