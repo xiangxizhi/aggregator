@@ -1,0 +1,354 @@
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: warning
+ipv6: false
+proxies:
+- name: US-001 | US-HTTP 001
+  type: http
+  server: 138.199.35.216
+  port: 9002
+  udp: true
+  tls: true
+  skip-cert-verify: true
+  username: 'null'
+  password: 'null'
+- name: US-002 | 美国 | SS | 030
+  type: ss
+  server: 23.150.152.38
+  port: 19999
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- name: US-003 | TROJAN 001
+  password: nwilryafgkyvuxauc8pz
+  port: 50875
+  server: 69.164.240.85
+  skip-cert-verify: true
+  sni: ''
+  type: trojan
+  udp: true
+- name: US-004 | 美国 | VLESS | 003
+  type: vless
+  server: 147.224.54.25
+  port: 2053
+  uuid: cdb7fa1d-6e7a-467c-da9c-da363c7bf779
+  udp: true
+  tls: true
+  servername: www.cloudflare.com
+  client-fingerprint: firefox
+  reality-opts:
+    public-key: DEFJSLdILrvauMpwtpvFZddadpt3rNtv03Dui2EkmRk
+    short-id: '68'
+- name: US-005 | 美国 | VMESS | 002
+  type: vmess
+  server: 38.11.69.48
+  port: 30004
+  uuid: 418048af-a293-4b99-9b0c-98ca3580dd24
+  alterId: 64
+  cipher: auto
+  udp: true
+  network: ws
+  ws-opts:
+    path: /path/1698843555400
+    headers:
+      Host: www.83761815.xyz
+  tls: true
+  servername: www.83761815.xyz
+- name: US-006 | UNITED STATES 021
+  type: hysteria2
+  server: 66.94.121.46
+  port: 443
+  password: gf1:gfhysteria2024
+  sni: www.broadcom.com
+  skip-cert-verify: true
+  udp: true
+- name: US-007 | DE-ANYTLS 001
+  type: anytls
+  server: sdf65h46wr.df6h451rh.xin
+  port: 443
+  udp: true
+  password: 0324fbc29561
+  client-fingerprint: chrome
+  sni: images.ctfassets.net
+  skip-cert-verify: true
+- name: US-008 | 日本 | VLESS | 001
+  type: vless
+  server: kuruish.org
+  port: 443
+  uuid: 03fcc618-b93d-6796-6aed-8a38c975d581
+  udp: true
+  tls: true
+  servername: kuruish.org
+- name: US-009 | 美国 | SS | 027
+  type: ss
+  server: 104.238.140.45
+  port: 11051
+  cipher: chacha20-ietf-poly1305
+  password: JUXsy78dSs6ROkasikmoaL
+  udp: true
+- name: US-010 | US-VPNINE 001
+  obfs: salamander
+  obfs-password: 0dRexOATy4t9J1ckKOLpPy9HrNoU5FmN
+  password: HPzKAhFXV5XgEmRSTM33DRuTHeFcB5ON
+  port: 443
+  server: 89.117.172.45
+  sni: eth.todsm.com
+  tls: false
+  type: hysteria2
+  udp: true
+- name: US-011 | 美国 | VMESS | 005
+  type: vmess
+  server: 167.88.62.56
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: xmfhlpy.com
+- name: US-012 | US-SPEEDNODE 001
+  port: 443
+  server: 38.247.141.135
+  skip-cert-verify: true
+  tls: true
+  type: http
+  udp: true
+- name: US-013 | 美国 | VLESS | 001
+  type: vless
+  server: 156.229.167.109
+  port: 8443
+  uuid: eb8c97f7-a154-4442-91b0-54c0d055ad0b
+  udp: true
+  tls: true
+  servername: github.githubassets.com
+  client-fingerprint: chrome
+  reality-opts:
+    public-key: 4g6gX0ueJap7pY_iTDx23h6bzo3KIOTcFzP1Uacn0QA
+    short-id: 4ad2e4e660550e43
+- cipher: rc4-md5
+  name: US-014 | SHADOWSOCKS 017
+  password: 14fFPrbezE3HDZzsMOr6
+  port: 8080
+  server: 107.155.57.11
+  type: ss
+  udp: true
+- name: US-015 | UNITED STATES 022
+  type: vmess
+  server: 167.88.62.51
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: xmfhlpy.com
+- name: US-016 | UNITED STATES 011
+  type: hysteria2
+  server: 206.189.229.48
+  port: 443
+  password: YV1sd3tfCZngTtnvRmy7
+  sni: www.microsoft.com
+  skip-cert-verify: true
+  obfs: salamander
+  obfs-password: ZuPf4OcXKvotJdDxlTus
+  udp: true
+- name: US-017 | US-HTTP 003
+  type: http
+  server: 71.43.26.234
+  port: 443
+  udp: true
+  tls: true
+  skip-cert-verify: true
+- cipher: rc4-md5
+  name: US-018 | SHADOWSOCKS 011
+  password: 14fFPrbezE3HDZzsMOr6
+  port: 8080
+  server: 107.155.57.51
+  type: ss
+  udp: true
+- name: US-019 | 美国 | VLESS | 001
+  type: vless
+  server: 216.227.161.95
+  port: 7443
+  uuid: 218fd696-e3a2-4c33-b397-a5f13a82969e
+  udp: true
+  tls: true
+  servername: media3.abvphelp.cc
+  client-fingerprint: firefox
+  reality-opts:
+    public-key: uNqGvaJEIFTFQvAxsTDhetPxkIWzJuBtxXsK0yFMYzM
+    short-id: 48d5cf47
+  network: grpc
+  grpc-opts:
+    grpc-service-name: grpc
+- name: US-020 | UNITED STATES 018
+  type: vmess
+  server: 162.251.61.46
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: xmfhlpy.com
+- name: IT-001 | 意大利 | SS | 002
+  type: ss
+  server: 91.201.65.122
+  port: 9053
+  cipher: aes-256-cfb
+  password: SBM7R883jBmnqe6C
+  udp: true
+- cipher: aes-128-gcm
+  name: JP-001 | SS-JP 004
+  password: shadowsocks
+  port: 443
+  server: 149.22.87.241
+  type: ss
+  udp: true
+- name: JP-002 | 日本 | VMESS | 001
+  type: vmess
+  server: 168.138.43.75
+  port: 80
+  uuid: 11c3627f-31e8-4695-dfbd-34076e2f1f5d
+  alterId: 0
+  cipher: auto
+  udp: true
+  network: ws
+  ws-opts:
+    path: /cctv13.m3u8
+    headers:
+      Host: None
+- name: JP-003 | HYSTERIA2 005
+  password: 184cdec28da5a09450803c8debcd2cc9
+  port: 50160
+  server: 138.3.208.26
+  skip-cert-verify: true
+  sni: 138.3.208.26
+  type: hysteria2
+  udp: true
+- cipher: aes-128-gcm
+  name: JP-004 | SS-JP 003
+  password: shadowsocks
+  port: 443
+  server: 149.22.87.204
+  type: ss
+  udp: true
+- name: JP-005 | HYSTERIA2 004
+  password: u63SxILNwtrQZ7Y1ZrFaZfsA
+  port: 8443
+  server: 8.211.175.236
+  skip-cert-verify: true
+  sni: 8.211.175.236
+  type: hysteria2
+  udp: true
+- cipher: aes-128-gcm
+  name: JP-006 | SS-JP 002
+  password: shadowsocks
+  port: 443
+  server: 149.22.87.240
+  type: ss
+  udp: true
+- name: JP-007 | HYSTERIA2 003
+  password: usqmqUKJFIlCmvkCNSY64L3k
+  port: 443
+  server: 8.209.247.109
+  skip-cert-verify: true
+  sni: bing.com
+  type: hysteria2
+  udp: true
+proxy-groups:
+- name: 美国优选20
+  type: select
+  proxies: &id001
+  - US-001 | US-HTTP 001
+  - US-002 | 美国 | SS | 030
+  - US-003 | TROJAN 001
+  - US-004 | 美国 | VLESS | 003
+  - US-005 | 美国 | VMESS | 002
+  - US-006 | UNITED STATES 021
+  - US-007 | DE-ANYTLS 001
+  - US-008 | 日本 | VLESS | 001
+  - US-009 | 美国 | SS | 027
+  - US-010 | US-VPNINE 001
+  - US-011 | 美国 | VMESS | 005
+  - US-012 | US-SPEEDNODE 001
+  - US-013 | 美国 | VLESS | 001
+  - US-014 | SHADOWSOCKS 017
+  - US-015 | UNITED STATES 022
+  - US-016 | UNITED STATES 011
+  - US-017 | US-HTTP 003
+  - US-018 | SHADOWSOCKS 011
+  - US-019 | 美国 | VLESS | 001
+  - US-020 | UNITED STATES 018
+- name: 美国自动测速
+  type: url-test
+  proxies: *id001
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+- name: 意大利优选1
+  type: select
+  proxies: &id002
+  - IT-001 | 意大利 | SS | 002
+- name: 意大利自动测速
+  type: url-test
+  proxies: *id002
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+- name: 日本优选7
+  type: select
+  proxies: &id003
+  - JP-001 | SS-JP 004
+  - JP-002 | 日本 | VMESS | 001
+  - JP-003 | HYSTERIA2 005
+  - JP-004 | SS-JP 003
+  - JP-005 | HYSTERIA2 004
+  - JP-006 | SS-JP 002
+  - JP-007 | HYSTERIA2 003
+- name: 日本自动测速
+  type: url-test
+  proxies: *id003
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+- name: 三国优选28
+  type: select
+  proxies: &id004
+  - US-001 | US-HTTP 001
+  - US-002 | 美国 | SS | 030
+  - US-003 | TROJAN 001
+  - US-004 | 美国 | VLESS | 003
+  - US-005 | 美国 | VMESS | 002
+  - US-006 | UNITED STATES 021
+  - US-007 | DE-ANYTLS 001
+  - US-008 | 日本 | VLESS | 001
+  - US-009 | 美国 | SS | 027
+  - US-010 | US-VPNINE 001
+  - US-011 | 美国 | VMESS | 005
+  - US-012 | US-SPEEDNODE 001
+  - US-013 | 美国 | VLESS | 001
+  - US-014 | SHADOWSOCKS 017
+  - US-015 | UNITED STATES 022
+  - US-016 | UNITED STATES 011
+  - US-017 | US-HTTP 003
+  - US-018 | SHADOWSOCKS 011
+  - US-019 | 美国 | VLESS | 001
+  - US-020 | UNITED STATES 018
+  - IT-001 | 意大利 | SS | 002
+  - JP-001 | SS-JP 004
+  - JP-002 | 日本 | VMESS | 001
+  - JP-003 | HYSTERIA2 005
+  - JP-004 | SS-JP 003
+  - JP-005 | HYSTERIA2 004
+  - JP-006 | SS-JP 002
+  - JP-007 | HYSTERIA2 003
+- name: 三国自动测速
+  type: url-test
+  proxies: *id004
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+rules:
+- MATCH,三国优选28
