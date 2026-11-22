@@ -1,0 +1,344 @@
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: warning
+ipv6: false
+proxies:
+- name: US-001 | US-HTTP 001
+  type: http
+  server: 24.225.10.211
+  port: 443
+  udp: true
+  tls: true
+  skip-cert-verify: true
+- name: US-002 | UNITED STATES 005
+  type: ss
+  server: 167.88.62.203
+  port: 19999
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- name: US-003 | UNITED STATES 020
+  type: vmess
+  server: 38.128.66.241
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: xmfhlpy.com
+- name: US-004 | V2RAYNPVTCONFIG 001
+  password: AIcYjw5Oc9Rrrr9SGDUBbBIC
+  port: 36712
+  server: 38.76.150.108
+  skip-cert-verify: true
+  tls: false
+  type: hysteria2
+  udp: true
+- type: hysteria
+  name: US-005 | US-美国-IPV 002
+  server: 137.175.82.41
+  port: 20022
+  password: dongtaiwang.com
+  tls: true
+  servername: bing.com
+  sni: bing.com
+  skip-cert-verify: true
+  alpn:
+  - h3
+  up: '11'
+  down: '55'
+  auth-str: dongtaiwang.com
+  udp: true
+- name: US-006 | DE-ANYTLS 001
+  type: anytls
+  server: sdf65h46wr.df6h451rh.xin
+  port: 443
+  udp: true
+  password: 0324fbc29561
+  client-fingerprint: chrome
+  sni: images.ctfassets.net
+  skip-cert-verify: true
+- name: US-007 | UNITED STATES 015
+  type: ss
+  server: 167.17.67.171
+  port: 19999
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- name: US-008 | UNITED STATES 012
+  type: vmess
+  server: 38.128.66.212
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: xmfhlpy.com
+- name: US-009 | HYSTERIA2 002
+  password: gf1:gfhysteria2024
+  port: 443
+  server: 66.94.121.46
+  skip-cert-verify: true
+  sni: vk.com
+  type: hysteria2
+  udp: true
+- name: US-010 | US-HTTP 002
+  type: http
+  server: 138.199.35.216
+  port: 9002
+  udp: true
+  tls: true
+  skip-cert-verify: true
+  username: 'null'
+  password: 'null'
+- type: hysteria
+  name: US-011 | US-美国-IPV 003
+  server: 38.6.222.131
+  port: 11008
+  password: dongtaiwang.com
+  tls: true
+  servername: bing.com
+  sni: bing.com
+  skip-cert-verify: true
+  alpn:
+  - h3
+  up: '11'
+  down: '55'
+  auth-str: dongtaiwang.com
+  udp: true
+- cipher: aes-128-gcm
+  name: US-012 | SHADOWSOCKS 004
+  password: shadowsocks
+  port: 443
+  server: 37.19.198.244
+  type: ss
+  udp: true
+- name: US-013 | UNITED STATES 007
+  type: vmess
+  server: 38.91.100.69
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: xmfhlpy.com
+- name: US-014 | US-HTTP 003
+  type: http
+  server: 162.244.227.36
+  port: 443
+  udp: true
+  tls: true
+  skip-cert-verify: true
+- alpn:
+  - h3
+  auth: 57beeeb0-03fc-4fc9-94da-7604488a7134
+  down: '200'
+  name: US-015 | 美国 | USA 002
+  obfs: salamander
+  obfs-password: kydqninqtcdomlcb
+  password: 57beeeb0-03fc-4fc9-94da-7604488a7134
+  port: 40205
+  server: a1dgus.supertoolify.com
+  skip-cert-verify: true
+  sni: psstatic.cdn.bcebos.com
+  type: hysteria2
+  udp: true
+  up: '100'
+- name: US-016 | UNITED STATES 003
+  type: ss
+  server: 38.128.66.32
+  port: 19999
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- name: US-017 | UNITED STATES 016
+  type: vmess
+  server: 67.220.95.49
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: xmfhlpy.com
+- alpn:
+  - h3
+  auth: 57beeeb0-03fc-4fc9-94da-7604488a7134
+  down: '200'
+  name: US-018 | 美国 | USA 001
+  obfs: salamander
+  obfs-password: re61ep4ancwplwh8
+  password: 57beeeb0-03fc-4fc9-94da-7604488a7134
+  port: 40055
+  server: a3dgus.supertoolify.com
+  skip-cert-verify: true
+  sni: psstatic.cdn.bcebos.com
+  type: hysteria2
+  udp: true
+  up: '100'
+- name: US-019 | UNITED STATES 004
+  type: vmess
+  server: 38.91.100.16
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: xmfhlpy.com
+- cipher: aes-128-gcm
+  name: US-020 | SHADOWSOCKS 006
+  password: shadowsocks
+  port: 443
+  server: 37.19.198.236
+  type: ss
+  udp: true
+- name: IT-001 | IT-HTTP 002
+  type: http
+  server: 109.116.41.154
+  port: 443
+  udp: true
+  tls: true
+  skip-cert-verify: true
+- cipher: aes-128-gcm
+  name: JP-001 | SS-JP 001
+  password: shadowsocks
+  port: 443
+  server: 149.22.87.240
+  type: ss
+  udp: true
+- name: JP-002 | 日本 | JPN 001
+  server: jp2static.jumpernode.site
+  port: 443
+  type: vless
+  uuid: f325fb7d-cad5-4ac8-8888-3f39b4b9d1ca
+  tls: true
+  flow: xtls-rprx-vision
+  reality-opts:
+    public-key: GeKuYNeAqQQkTN9OMJxXA9I-rXs7IiGh4Sl82crCITc
+    short-id: 6281f3ef81187ad8
+  servername: www.amzn.com
+  client-fingerprint: chrome
+  network: tcp
+  udp: true
+- name: JP-003 | HYSTERIA2 002
+  password: u63SxILNwtrQZ7Y1ZrFaZfsA
+  port: 8443
+  server: 8.211.175.236
+  skip-cert-verify: true
+  sni: ''
+  type: hysteria2
+  udp: true
+- name: JP-004 | 台湾 | TWN 001
+  password: e2413369-16de-4c90-97c5-b39b8d6b71cd
+  port: 443
+  server: im.frnhk.xyz
+  skip-cert-verify: true
+  sni: im.frnhk.xyz
+  type: anytls
+  udp: true
+- name: JP-005 | 日本 | HYSTERIA2 | 001
+  type: hysteria2
+  server: dg3rb.ianai.it.com
+  port: 443
+  password: 57beeeb0-03fc-4fc9-94da-7604488a7134
+  sni: dg3rb.ianai.it.com
+  skip-cert-verify: true
+  obfs: salamander
+  obfs-password: e3ymhs6gbzptjysj
+  udp: true
+proxy-groups:
+- name: 美国优选20
+  type: select
+  proxies: &id001
+  - US-001 | US-HTTP 001
+  - US-002 | UNITED STATES 005
+  - US-003 | UNITED STATES 020
+  - US-004 | V2RAYNPVTCONFIG 001
+  - US-005 | US-美国-IPV 002
+  - US-006 | DE-ANYTLS 001
+  - US-007 | UNITED STATES 015
+  - US-008 | UNITED STATES 012
+  - US-009 | HYSTERIA2 002
+  - US-010 | US-HTTP 002
+  - US-011 | US-美国-IPV 003
+  - US-012 | SHADOWSOCKS 004
+  - US-013 | UNITED STATES 007
+  - US-014 | US-HTTP 003
+  - US-015 | 美国 | USA 002
+  - US-016 | UNITED STATES 003
+  - US-017 | UNITED STATES 016
+  - US-018 | 美国 | USA 001
+  - US-019 | UNITED STATES 004
+  - US-020 | SHADOWSOCKS 006
+- name: 美国自动测速
+  type: url-test
+  proxies: *id001
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+- name: 意大利优选1
+  type: select
+  proxies: &id002
+  - IT-001 | IT-HTTP 002
+- name: 意大利自动测速
+  type: url-test
+  proxies: *id002
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+- name: 日本优选5
+  type: select
+  proxies: &id003
+  - JP-001 | SS-JP 001
+  - JP-002 | 日本 | JPN 001
+  - JP-003 | HYSTERIA2 002
+  - JP-004 | 台湾 | TWN 001
+  - JP-005 | 日本 | HYSTERIA2 | 001
+- name: 日本自动测速
+  type: url-test
+  proxies: *id003
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+- name: 三国优选26
+  type: select
+  proxies: &id004
+  - US-001 | US-HTTP 001
+  - US-002 | UNITED STATES 005
+  - US-003 | UNITED STATES 020
+  - US-004 | V2RAYNPVTCONFIG 001
+  - US-005 | US-美国-IPV 002
+  - US-006 | DE-ANYTLS 001
+  - US-007 | UNITED STATES 015
+  - US-008 | UNITED STATES 012
+  - US-009 | HYSTERIA2 002
+  - US-010 | US-HTTP 002
+  - US-011 | US-美国-IPV 003
+  - US-012 | SHADOWSOCKS 004
+  - US-013 | UNITED STATES 007
+  - US-014 | US-HTTP 003
+  - US-015 | 美国 | USA 002
+  - US-016 | UNITED STATES 003
+  - US-017 | UNITED STATES 016
+  - US-018 | 美国 | USA 001
+  - US-019 | UNITED STATES 004
+  - US-020 | SHADOWSOCKS 006
+  - IT-001 | IT-HTTP 002
+  - JP-001 | SS-JP 001
+  - JP-002 | 日本 | JPN 001
+  - JP-003 | HYSTERIA2 002
+  - JP-004 | 台湾 | TWN 001
+  - JP-005 | 日本 | HYSTERIA2 | 001
+- name: 三国自动测速
+  type: url-test
+  proxies: *id004
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+rules:
+- MATCH,三国优选26
