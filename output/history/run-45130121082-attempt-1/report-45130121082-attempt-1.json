@@ -1,0 +1,769 @@
+{
+  "created_utc": "2026-11-23T07:18:43.471209+00:00",
+  "runner": "GitHub Actions ubuntu-latest",
+  "sources": [
+    "Telegram",
+    "Yandex Search",
+    "GitHub Code/Issues",
+    "Pawdroid/Free-servers",
+    "Au1rxx/free-vpn-subscriptions (US/IT/JP shards, re-verified)",
+    "mfuu/FreeProxies",
+    "share-daily/node",
+    "735754647/Free-Nodes",
+    "nodesradar/nodesradar-en"
+  ],
+  "raw_candidates": 2210,
+  "parsed_supported": 1289,
+  "alive": 622,
+  "egress_country_confirmed": 312,
+  "country_egress_confirmed": {
+    "US": 124,
+    "IT": 3,
+    "JP": 9
+  },
+  "country_targets": {
+    "US": 20,
+    "IT": 20,
+    "JP": 20
+  },
+  "speed_measured": 127,
+  "final_count": 29,
+  "target_count": 60,
+  "protocol_counts": {
+    "parsed_unique": {
+      "anytls": 6,
+      "http": 164,
+      "hysteria": 5,
+      "hysteria2": 184,
+      "ss": 238,
+      "trojan": 170,
+      "vless": 437,
+      "vmess": 85
+    },
+    "alive": {
+      "anytls": 5,
+      "http": 147,
+      "hysteria": 4,
+      "hysteria2": 53,
+      "ss": 216,
+      "trojan": 50,
+      "vless": 88,
+      "vmess": 59
+    },
+    "target_countries": {
+      "US": {
+        "http": 15,
+        "hysteria": 2,
+        "hysteria2": 6,
+        "ss": 57,
+        "trojan": 4,
+        "vless": 10,
+        "vmess": 30
+      },
+      "IT": {
+        "http": 2,
+        "ss": 1
+      },
+      "JP": {
+        "anytls": 1,
+        "hysteria2": 3,
+        "ss": 5
+      }
+    },
+    "speed_measured": {
+      "anytls": 1,
+      "http": 17,
+      "hysteria": 2,
+      "hysteria2": 9,
+      "ss": 55,
+      "trojan": 4,
+      "vless": 9,
+      "vmess": 30
+    },
+    "after_dedup": {
+      "anytls": 1,
+      "http": 16,
+      "hysteria": 1,
+      "hysteria2": 8,
+      "ss": 53,
+      "trojan": 4,
+      "vless": 9,
+      "vmess": 28
+    },
+    "export_config_validated": {
+      "http": 16,
+      "hysteria": 1,
+      "hysteria2": 8,
+      "ss": 53,
+      "trojan": 3,
+      "vless": 9,
+      "vmess": 28
+    },
+    "final": {
+      "http": 5,
+      "hysteria": 1,
+      "hysteria2": 5,
+      "ss": 9,
+      "trojan": 3,
+      "vless": 3,
+      "vmess": 3
+    }
+  },
+  "stage_counts": {
+    "parsed_unique": 1289,
+    "alive": 622,
+    "country_confirmed": 312,
+    "speed_measured": 127,
+    "after_dedup": 120,
+    "export_config_validated": 118,
+    "final": 29
+  },
+  "notes": [
+    "Country is checked through each proxy's actual egress connection, not the node label or origin server IP.",
+    "Cloud runner measurements are not the user's phone-network measurements.",
+    "Download speed uses two 512 KiB Cloudflare test downloads per confirmed target-country node.",
+    "The final file retains every validated node up to 20 per country; partial results are still published."
+  ],
+  "public_feed_stats": {
+    "pawdroid_uris": 11,
+    "au1rxx_proxies": 694,
+    "ermao_proxies": 412,
+    "ermao_uris": 0,
+    "au1rxx_it_proxies": 12,
+    "au1rxx_jp_proxies": 148,
+    "mfuu_freeproxies": 0,
+    "share_daily_nodes": 225,
+    "free_nodes_735754647": 51,
+    "nodesradar": 497
+  },
+  "collected_sites": 9,
+  "collected_site_names": [
+    "crawled-nodes",
+    "public-pawdroid",
+    "public-ermao-clash-mi-tested",
+    "public-au1rxx-us-shard",
+    "public-au1rxx-it-shard",
+    "public-au1rxx-jp-shard",
+    "public-share_daily_nodes",
+    "public-free_nodes_735754647",
+    "public-nodesradar"
+  ],
+  "sites_by_source": {
+    "TEMPORARY": 1,
+    "PUBLIC_FEED": 8
+  },
+  "created_tasks": 9,
+  "task_names": [
+    "crawled-nodes",
+    "public-pawdroid",
+    "public-ermao-clash-mi-tested",
+    "public-au1rxx-us-shard",
+    "public-au1rxx-it-shard",
+    "public-au1rxx-jp-shard",
+    "public-share_daily_nodes",
+    "public-free_nodes_735754647",
+    "public-nodesradar"
+  ],
+  "task_input_counts": [
+    {
+      "name": "crawled-nodes",
+      "subscriptions": 0,
+      "uris": 501,
+      "proxies": 0
+    },
+    {
+      "name": "public-pawdroid",
+      "subscriptions": 0,
+      "uris": 11,
+      "proxies": 0
+    },
+    {
+      "name": "public-ermao-clash-mi-tested",
+      "subscriptions": 0,
+      "uris": 0,
+      "proxies": 412
+    },
+    {
+      "name": "public-au1rxx-us-shard",
+      "subscriptions": 0,
+      "uris": 0,
+      "proxies": 694
+    },
+    {
+      "name": "public-au1rxx-it-shard",
+      "subscriptions": 0,
+      "uris": 0,
+      "proxies": 12
+    },
+    {
+      "name": "public-au1rxx-jp-shard",
+      "subscriptions": 0,
+      "uris": 0,
+      "proxies": 148
+    },
+    {
+      "name": "public-share_daily_nodes",
+      "subscriptions": 0,
+      "uris": 0,
+      "proxies": 225
+    },
+    {
+      "name": "public-free_nodes_735754647",
+      "subscriptions": 0,
+      "uris": 0,
+      "proxies": 51
+    },
+    {
+      "name": "public-nodesradar",
+      "subscriptions": 0,
+      "uris": 0,
+      "proxies": 497
+    }
+  ],
+  "task_parse_counts": [
+    {
+      "task_id": 1,
+      "parsed": 245,
+      "protocols": {
+        "hysteria2": 9,
+        "trojan": 37,
+        "vless": 199
+      }
+    },
+    {
+      "task_id": 2,
+      "parsed": 11,
+      "protocols": {
+        "ss": 2,
+        "vless": 9
+      }
+    },
+    {
+      "task_id": 3,
+      "parsed": 408,
+      "protocols": {
+        "anytls": 4,
+        "http": 87,
+        "hysteria": 5,
+        "hysteria2": 65,
+        "ss": 82,
+        "trojan": 29,
+        "vless": 118,
+        "vmess": 18
+      }
+    },
+    {
+      "task_id": 4,
+      "parsed": 617,
+      "protocols": {
+        "hysteria2": 29,
+        "ss": 28,
+        "trojan": 132,
+        "vless": 348,
+        "vmess": 80
+      }
+    },
+    {
+      "task_id": 5,
+      "parsed": 12,
+      "protocols": {
+        "ss": 7,
+        "vless": 5
+      }
+    },
+    {
+      "task_id": 6,
+      "parsed": 145,
+      "protocols": {
+        "hysteria2": 16,
+        "ss": 5,
+        "trojan": 5,
+        "vless": 117,
+        "vmess": 2
+      }
+    },
+    {
+      "task_id": 7,
+      "parsed": 225,
+      "protocols": {
+        "anytls": 2,
+        "http": 203,
+        "ss": 19,
+        "vless": 1
+      }
+    },
+    {
+      "task_id": 8,
+      "parsed": 50,
+      "protocols": {
+        "hysteria": 3,
+        "hysteria2": 9,
+        "ss": 16,
+        "trojan": 2,
+        "vless": 20
+      }
+    },
+    {
+      "task_id": 9,
+      "parsed": 497,
+      "protocols": {
+        "hysteria2": 84,
+        "ss": 182,
+        "trojan": 73,
+        "vmess": 158
+      }
+    }
+  ],
+  "parsed_all_by_type": {
+    "anytls": 6,
+    "http": 290,
+    "hysteria": 8,
+    "hysteria2": 212,
+    "ss": 341,
+    "trojan": 278,
+    "vless": 817,
+    "vmess": 258
+  },
+  "parse_rejections": {
+    "not_dict": 0,
+    "unsupported_type": 0,
+    "missing_server": 0,
+    "missing_port": 0
+  },
+  "parsed_supported_by_type": {
+    "anytls": 6,
+    "http": 290,
+    "hysteria": 8,
+    "hysteria2": 212,
+    "ss": 341,
+    "trojan": 278,
+    "vless": 817,
+    "vmess": 258
+  },
+  "geo_protocol_counts": {
+    "country_confirmed_by_type": {
+      "anytls": 3,
+      "http": 87,
+      "hysteria": 3,
+      "hysteria2": 35,
+      "ss": 113,
+      "trojan": 8,
+      "vless": 20,
+      "vmess": 43
+    },
+    "target_country_protocol_counts": {
+      "US": {
+        "hysteria2": 6,
+        "hysteria": 2,
+        "ss": 57,
+        "http": 15,
+        "vless": 10,
+        "trojan": 4,
+        "vmess": 30
+      },
+      "JP": {
+        "hysteria2": 3,
+        "ss": 5,
+        "anytls": 1
+      },
+      "IT": {
+        "http": 2,
+        "ss": 1
+      }
+    }
+  },
+  "geoip_method": "At least two independent online APIs must agree on country and exact egress IP",
+  "speed_measured_by_country": {
+    "US": 115,
+    "IT": 3,
+    "JP": 9
+  },
+  "unique_server_endpoints_after_dedup": 120,
+  "unique_egress_ips_after_dedup": 120,
+  "exported_config_validation": {
+    "tested_by_protocol": {
+      "anytls": 1,
+      "http": 16,
+      "hysteria": 1,
+      "hysteria2": 8,
+      "ss": 53,
+      "trojan": 4,
+      "vless": 9,
+      "vmess": 28
+    },
+    "passed_by_protocol": {
+      "http": 16,
+      "hysteria": 1,
+      "hysteria2": 8,
+      "ss": 53,
+      "trojan": 3,
+      "vless": 9,
+      "vmess": 28
+    },
+    "rejected_by_protocol": {
+      "anytls": 1,
+      "trojan": 1
+    }
+  },
+  "country_selection": {
+    "US": {
+      "available": 109,
+      "selected": 20,
+      "protocol_quota": {
+        "http": 3,
+        "ss": 4,
+        "trojan": 3,
+        "vless": 3,
+        "vmess": 3,
+        "hysteria2": 3,
+        "hysteria": 1
+      },
+      "protocol_counts": {
+        "http": 3,
+        "hysteria": 1,
+        "hysteria2": 3,
+        "ss": 4,
+        "trojan": 3,
+        "vless": 3,
+        "vmess": 3
+      }
+    },
+    "IT": {
+      "available": 3,
+      "selected": 3,
+      "protocol_quota": {
+        "http": 2,
+        "ss": 1
+      },
+      "protocol_counts": {
+        "http": 2,
+        "ss": 1
+      }
+    },
+    "JP": {
+      "available": 6,
+      "selected": 6,
+      "protocol_quota": {
+        "ss": 4,
+        "hysteria2": 2
+      },
+      "protocol_counts": {
+        "hysteria2": 2,
+        "ss": 4
+      }
+    }
+  },
+  "protocols_available_after_export_validation": {
+    "http": 16,
+    "hysteria": 1,
+    "hysteria2": 8,
+    "ss": 53,
+    "trojan": 3,
+    "vless": 9,
+    "vmess": 28
+  },
+  "final_yaml_syntax_check": {
+    "passed": true,
+    "detail": "time=\"2026-11-23T07:41:27.945295213Z\" level=info msg=\"Start initial configuration in progress\"\ntime=\"2026-11-23T07:41:27.958837530Z\" level=info msg=\"Geodata Loader mode: memconservative\"\ntime=\"2026-11-23T07:41:27.958866998Z\" level=info msg=\"Geosite Matcher implementation: succinct\"\ntime=\"2026-11-23T07:41:27.958934323Z\" level=info msg=\"Initial configuration complete, total time: 13ms\"\nconfiguration file /home/runner/work/aggregator/aggregator/clash/tri_country_top60_final_validation.yaml test is successful\n"
+  },
+  "ranking": [
+    {
+      "rank": 1,
+      "name": "US-001 | US-7|3.0MB S|R002 001",
+      "type": "http",
+      "latency_ms": 230.1,
+      "download_mbps": 13.57,
+      "stability_score": 0.996,
+      "score": 0.51602,
+      "country": "US"
+    },
+    {
+      "rank": 2,
+      "name": "US-002 | UNITED STATES 007",
+      "type": "ss",
+      "latency_ms": 228.3,
+      "download_mbps": 13.98,
+      "stability_score": 0.999,
+      "score": 0.52005,
+      "country": "US"
+    },
+    {
+      "rank": 3,
+      "name": "US-003 | TROJAN 002",
+      "type": "trojan",
+      "latency_ms": 224.6,
+      "download_mbps": 9.46,
+      "stability_score": 0.974,
+      "score": 0.47919,
+      "country": "US"
+    },
+    {
+      "rank": 4,
+      "name": "US-004 | VLESS 006",
+      "type": "vless",
+      "latency_ms": 363.3,
+      "download_mbps": 5.96,
+      "stability_score": 0.997,
+      "score": 0.39604,
+      "country": "US"
+    },
+    {
+      "rank": 5,
+      "name": "US-005 | VMESS 001",
+      "type": "vmess",
+      "latency_ms": 262.8,
+      "download_mbps": 10.96,
+      "stability_score": 0.992,
+      "score": 0.48205,
+      "country": "US"
+    },
+    {
+      "rank": 6,
+      "name": "US-006 | 75 ONECLICKVPNKEYS 001",
+      "type": "hysteria2",
+      "latency_ms": 238.7,
+      "download_mbps": 9.19,
+      "stability_score": 0.98,
+      "score": 0.47135,
+      "country": "US"
+    },
+    {
+      "rank": 7,
+      "name": "US-007 | US-美国-IPV 001",
+      "type": "hysteria",
+      "latency_ms": 1562.5,
+      "download_mbps": 3.33,
+      "stability_score": 0.916,
+      "score": 0.26456,
+      "country": "US"
+    },
+    {
+      "rank": 8,
+      "name": "US-008 | SHADOWSOCKS 002",
+      "type": "ss",
+      "latency_ms": 266.6,
+      "download_mbps": 14.96,
+      "stability_score": 0.998,
+      "score": 0.51211,
+      "country": "US"
+    },
+    {
+      "rank": 9,
+      "name": "US-009 | US-15|2.4MB 001",
+      "type": "http",
+      "latency_ms": 237.3,
+      "download_mbps": 13.71,
+      "stability_score": 0.978,
+      "score": 0.51145,
+      "country": "US"
+    },
+    {
+      "rank": 10,
+      "name": "US-010 | UNITED STATES 017",
+      "type": "hysteria2",
+      "latency_ms": 275.6,
+      "download_mbps": 9.71,
+      "stability_score": 0.95,
+      "score": 0.45941,
+      "country": "US"
+    },
+    {
+      "rank": 11,
+      "name": "US-011 | UNITED STATES 018",
+      "type": "vmess",
+      "latency_ms": 289.3,
+      "download_mbps": 8.21,
+      "stability_score": 0.996,
+      "score": 0.44533,
+      "country": "US"
+    },
+    {
+      "rank": 12,
+      "name": "US-012 | TROJAN 001",
+      "type": "trojan",
+      "latency_ms": 353.1,
+      "download_mbps": 5.83,
+      "stability_score": 0.998,
+      "score": 0.39633,
+      "country": "US"
+    },
+    {
+      "rank": 13,
+      "name": "US-013 | VLESS 004",
+      "type": "vless",
+      "latency_ms": 361.1,
+      "download_mbps": 5.81,
+      "stability_score": 0.938,
+      "score": 0.38529,
+      "country": "US"
+    },
+    {
+      "rank": 14,
+      "name": "US-014 | US-HTTP 004",
+      "type": "http",
+      "latency_ms": 237.1,
+      "download_mbps": 13.54,
+      "stability_score": 0.975,
+      "score": 0.50981,
+      "country": "US"
+    },
+    {
+      "rank": 15,
+      "name": "US-015 | SHADOWSOCKS 004",
+      "type": "ss",
+      "latency_ms": 269.3,
+      "download_mbps": 14.17,
+      "stability_score": 0.915,
+      "score": 0.49356,
+      "country": "US"
+    },
+    {
+      "rank": 16,
+      "name": "US-016 | UNITED STATES 009",
+      "type": "vmess",
+      "latency_ms": 293.7,
+      "download_mbps": 8.18,
+      "stability_score": 0.998,
+      "score": 0.44396,
+      "country": "US"
+    },
+    {
+      "rank": 17,
+      "name": "US-017 | UNITED STATES 009",
+      "type": "hysteria2",
+      "latency_ms": 348.1,
+      "download_mbps": 6.69,
+      "stability_score": 0.999,
+      "score": 0.41063,
+      "country": "US"
+    },
+    {
+      "rank": 18,
+      "name": "US-018 | VLESS 002",
+      "type": "vless",
+      "latency_ms": 358.1,
+      "download_mbps": 5.92,
+      "stability_score": 0.894,
+      "score": 0.38115,
+      "country": "US"
+    },
+    {
+      "rank": 19,
+      "name": "US-019 | UNITED STATES 014",
+      "type": "trojan",
+      "latency_ms": 310.2,
+      "download_mbps": 6.39,
+      "stability_score": 0.706,
+      "score": 0.37156,
+      "country": "US"
+    },
+    {
+      "rank": 20,
+      "name": "US-020 | SHADOWSOCKS 005",
+      "type": "ss",
+      "latency_ms": 267.6,
+      "download_mbps": 13.84,
+      "stability_score": 0.924,
+      "score": 0.49319,
+      "country": "US"
+    },
+    {
+      "rank": 1,
+      "name": "IT-001 | IT-HTTP 002",
+      "type": "http",
+      "latency_ms": 1168.0,
+      "download_mbps": 2.18,
+      "stability_score": 0.983,
+      "score": 0.25449,
+      "country": "IT"
+    },
+    {
+      "rank": 2,
+      "name": "IT-002 | ITALY 001",
+      "type": "ss",
+      "latency_ms": 685.1,
+      "download_mbps": 2.59,
+      "stability_score": 0.991,
+      "score": 0.28828,
+      "country": "IT"
+    },
+    {
+      "rank": 3,
+      "name": "IT-003 | IT-HTTP 001",
+      "type": "http",
+      "latency_ms": 1509.0,
+      "download_mbps": 2.33,
+      "stability_score": 0.829,
+      "score": 0.22784,
+      "country": "IT"
+    },
+    {
+      "rank": 1,
+      "name": "JP-001 | SS-JP 003",
+      "type": "ss",
+      "latency_ms": 417.2,
+      "download_mbps": 4.36,
+      "stability_score": 0.997,
+      "score": 0.35799,
+      "country": "JP"
+    },
+    {
+      "rank": 2,
+      "name": "JP-002 | HYSTERIA2 001",
+      "type": "hysteria2",
+      "latency_ms": 425.1,
+      "download_mbps": 1.86,
+      "stability_score": 0.981,
+      "score": 0.29568,
+      "country": "JP"
+    },
+    {
+      "rank": 3,
+      "name": "JP-003 | SS-JP 001",
+      "type": "ss",
+      "latency_ms": 416.4,
+      "download_mbps": 4.31,
+      "stability_score": 0.997,
+      "score": 0.35719,
+      "country": "JP"
+    },
+    {
+      "rank": 4,
+      "name": "JP-004 | HYSTERIA2 002",
+      "type": "hysteria2",
+      "latency_ms": 1652.4,
+      "download_mbps": 0.09,
+      "stability_score": 0.703,
+      "score": 0.13489,
+      "country": "JP"
+    },
+    {
+      "rank": 5,
+      "name": "JP-005 | SS-JP 002",
+      "type": "ss",
+      "latency_ms": 416.5,
+      "download_mbps": 4.3,
+      "stability_score": 0.992,
+      "score": 0.35622,
+      "country": "JP"
+    },
+    {
+      "rank": 6,
+      "name": "JP-006 | SS-JP 004",
+      "type": "ss",
+      "latency_ms": 1452.1,
+      "download_mbps": 0.91,
+      "stability_score": 0.882,
+      "score": 0.1946,
+      "country": "JP"
+    }
+  ],
+  "country_final_counts": {
+    "US": 20,
+    "IT": 3,
+    "JP": 6
+  },
+  "status": "success",
+  "note": "Partial result: saved all 29 validated nodes; target was 60.",
+  "test_limits": "Latency is the median of up to three HTTPS 204 requests. Download speed is the median of up to two 512 KiB Cloudflare downloads. These are GitHub runner results, not handset results."
+}
