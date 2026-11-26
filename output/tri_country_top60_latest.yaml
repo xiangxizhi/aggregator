@@ -4,78 +4,54 @@ mode: rule
 log-level: warning
 ipv6: false
 proxies:
-- name: US-001 | US-HTTP 005
+- name: US-001 | US-HTTP 004
   type: http
-  server: 138.199.35.198
+  server: 138.199.35.212
   port: 9002
   udp: true
   tls: true
   skip-cert-verify: true
-- name: US-002 | 美国 | SS | 003
+- cipher: aes-128-gcm
+  name: US-002 | SHADOWSOCKS 021
+  password: shadowsocks
+  port: 443
+  server: 156.146.38.169
   type: ss
-  server: 38.143.66.146
-  port: 19999
-  cipher: aes-256-gcm
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
   udp: true
 - name: US-003 | TROJAN 005
   password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
   port: 443
-  server: 167.88.61.20
-  skip-cert-verify: false
-  sni: api.browseseniorrolesandenhanceyourcareertoday.com
+  server: 216.152.155.176
+  skip-cert-verify: true
+  sni: blog.nextjobopportunityandclaimyouridealrole.com
   type: trojan
   udp: true
-- name: US-004 | 美国 | VLESS | 002
+- name: US-004 | 美国 | VLESS | 003
   type: vless
-  server: 154.12.49.239
-  port: 80
-  uuid: e13cf851-b4fd-413b-8d49-146e6eb8e5d4
+  server: 216.227.161.95
+  port: 7443
+  uuid: 218fd696-e3a2-4c33-b397-a5f13a82969e
   udp: true
-  network: ws
-  ws-opts:
-    path: /platform103
-- alterId: 0
-  cipher: auto
-  name: US-005 | VMESS 003
-  network: tcp
-  port: 18000
-  server: 84.17.41.2
-  type: vmess
-  udp: true
-  uuid: f8c8dc3d-0d37-46b0-8b34-a7232882fcfe
-- name: US-006 | HYSTERIA2 001
-  password: gf1:gfhysteria2024
-  port: 443
-  server: 66.94.121.46
-  skip-cert-verify: true
-  sni: 66.94.121.46
-  type: hysteria2
-  udp: true
-- type: hysteria
-  name: US-007 | US-美国-IPV 001
-  server: 38.6.222.132
-  port: 11008
-  password: dongtaiwang.com
   tls: true
-  servername: bing.com
-  sni: bing.com
-  skip-cert-verify: true
-  alpn:
-  - h3
-  up: '11'
-  down: '55'
-  auth-str: dongtaiwang.com
+  servername: media3.abvphelp.cc
+  client-fingerprint: firefox
+  reality-opts:
+    public-key: uNqGvaJEIFTFQvAxsTDhetPxkIWzJuBtxXsK0yFMYzM
+    short-id: 48d5cf47
+  network: grpc
+  grpc-opts:
+    grpc-service-name: grpc
+- name: US-005 | 美国 | VMESS | 008
+  type: vmess
+  server: 162.251.61.46
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
   udp: true
-- name: US-008 | PROXYPOOL | 台湾 | TWN 001
-  server: sdf65h46wr.df6h451rh.xin
-  port: 443
-  type: anytls
-  password: 0324fbc29561
-  udp: true
-  sni: images.ctfassets.net
-  skip-cert-verify: true
-- name: US-009 | 美国 | HYSTERIA2 | 002
+  tls: true
+  servername: xmfhlpy.com
+- name: US-006 | 美国 | HYSTERIA2 | 002
   type: hysteria2
   server: 47.89.232.46
   port: 8443
@@ -83,9 +59,17 @@ proxies:
   sni: hysteria2.local
   skip-cert-verify: true
   udp: true
-- name: US-010 | 美国 | VMESS | 001
+- name: US-007 | US-ANYTLS 001
+  type: anytls
+  server: sdf65h46wr.df6h451rh.xin
+  port: 443
+  udp: true
+  password: 0324fbc29561
+  sni: images.ctfassets.net
+  skip-cert-verify: true
+- name: US-008 | 美国 | VMESS | 007
   type: vmess
-  server: 23.150.152.65
+  server: 162.251.60.97
   port: 1270
   uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
   alterId: 0
@@ -93,78 +77,53 @@ proxies:
   udp: true
   tls: true
   servername: xmfhlpy.com
-- name: US-011 | 美国 | SS | 001
+- cipher: aes-128-gcm
+  name: US-009 | SHADOWSOCKS 011
+  password: shadowsocks
+  port: 443
+  server: 156.146.38.170
   type: ss
-  server: 23.150.152.38
-  port: 19999
-  cipher: aes-256-gcm
-  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
   udp: true
-- name: US-012 | US-HTTP 004
-  type: http
-  server: 138.199.35.216
-  port: 9002
-  udp: true
+- client-fingerprint: chrome
+  flow: xtls-rprx-vision
+  name: US-010 | VLESS 002
+  network: tcp
+  port: 443
+  reality-opts:
+    public-key: e2RLf57Li_-MDZGE9ss1BWPgP54mqRb5PfXhW2jcVVg
+    short-id: c39cc7310a
+  server: 169.40.42.202
+  servername: yahoo.com
   tls: true
-  skip-cert-verify: true
-  username: 'null'
-  password: 'null'
-- name: US-013 | 美国 | VLESS | 003
   type: vless
-  server: 216.106.185.158
-  port: 443
-  uuid: 03fcc618-b93d-6796-6aed-8a38c975d581
   udp: true
-  tls: true
-  servername: kuruish.org
-  client-fingerprint: chrome
-- name: US-014 | TROJAN 003
-  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
-  port: 443
-  server: 167.88.61.193
-  skip-cert-verify: false
-  sni: browseseniorrolesandenhanceyourcareertoday.com
-  type: trojan
-  udp: true
-- name: US-015 | 美国 | HYSTERIA2 | 001
+  uuid: d65cc14c-f53f-4fe2-b262-97856601319c
+- name: US-011 | 美国 | HYSTERIA2 | 004
   type: hysteria2
   server: 38.76.150.108
   port: 36712
   password: AIcYjw5Oc9Rrrr9SGDUBbBIC
-  sni: 38.76.150.108
+  sni: 'off'
   skip-cert-verify: true
   udp: true
-- name: US-016 | US-HTTP 003
+- name: US-012 | TROJAN 001
+  password: nwilryafgkyvuxauc8pz
+  port: 50875
+  server: 69.164.240.85
+  skip-cert-verify: true
+  sni: ''
+  type: trojan
+  udp: true
+- name: US-013 | US-HTTP 013
   type: http
-  server: 138.199.35.203
+  server: 138.199.35.200
   port: 9002
   udp: true
   tls: true
   skip-cert-verify: true
-- cipher: aes-128-gcm
-  name: US-017 | SHADOWSOCKS 003
-  password: shadowsocks
-  port: 443
-  server: 173.244.56.9
-  type: ss
-  udp: true
-- name: US-018 | 巴西 001
-  server: 179.254.92.134
-  port: 443
-  type: vless
-  uuid: 7ad63b26-bf70-4872-8fab-ebaf73a1e19d
-  tls: true
-  flow: xtls-rprx-vision
-  reality-opts:
-    public-key: OQu-e59wDwOSwiBBawquNAPhg8Li1hmioWU2Up1TGDw
-    short-id: c33807f76b689c9a
-  servername: assets-70.topp-con.xyz
-  client-fingerprint: chrome
-  network: tcp
-  udp: true
-- name: US-019 | 美国 | VMESS | 016
+- name: US-014 | 美国 | VMESS | 010
   type: vmess
-  server: 38.64.138.187
+  server: 38.128.66.241
   port: 1270
   uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
   alterId: 0
@@ -172,36 +131,87 @@ proxies:
   udp: true
   tls: true
   servername: xmfhlpy.com
-- name: US-020 | TROJAN 006
-  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
-  port: 443
-  server: 216.152.155.131
-  skip-cert-verify: true
-  sni: ''
-  type: trojan
+- name: US-015 | 美国 | SS | 004
+  type: ss
+  server: 67.220.73.178
+  port: 19999
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
   udp: true
-- name: IT-001 | IT-HTTP 001
-  type: http
-  server: 109.116.41.154
+- client-fingerprint: random
+  flow: xtls-rprx-vision
+  name: US-016 | VLESS 004
+  network: tcp
   port: 443
+  reality-opts:
+    public-key: e2RLf57Li_-MDZGE9ss1BWPgP54mqRb5PfXhW2jcVVg
+    short-id: c39cc7310a
+  server: 169.40.42.74
+  servername: yahoo.com
+  tls: true
+  type: vless
+  udp: true
+  uuid: d65cc14c-f53f-4fe2-b262-97856601319c
+- name: US-017 | US-HTTP 023
+  type: http
+  server: 138.199.35.202
+  port: 9002
   udp: true
   tls: true
   skip-cert-verify: true
-- name: IT-002 | IT-HTTP 002
+- name: US-018 | 美国 | HYSTERIA2 | 001
+  type: hysteria2
+  server: 66.94.121.46
+  port: 443
+  password: gf1:gfhysteria2024
+  sni: www.broadcom.com
+  skip-cert-verify: true
+  udp: true
+- name: US-019 | TROJAN 002
+  password: 0ab6c98dae3b48e8b9c4a776b6c9c19a
+  port: 443
+  server: 66.163.112.242
+  skip-cert-verify: true
+  sni: api.nextjobopportunityandclaimyouridealrole.com
+  type: trojan
+  udp: true
+- name: US-020 | 美国 | SS | 005
+  type: ss
+  server: 216.106.178.169
+  port: 19999
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- name: IT-001 | IT-HTTP 002
   type: http
   server: 91.243.118.217
   port: 443
   udp: true
   tls: true
   skip-cert-verify: true
+- name: IT-002 | 意大利 | SS | 006
+  type: ss
+  server: 91.201.65.122
+  port: 9059
+  cipher: aes-256-cfb
+  password: 9XwYyZsK8SNzQDtY
+  udp: true
 - cipher: aes-128-gcm
-  name: JP-001 | SS-JP 002
+  name: JP-001 | SS-JP 003
   password: shadowsocks
   port: 443
-  server: 149.22.87.241
+  server: 149.22.87.240
   type: ss
   udp: true
-- name: JP-002 | 日本 | VLESS | 001
+- name: JP-002 | 日本 | TROJAN | 001
+  type: trojan
+  server: 193.123.160.109
+  port: 8443
+  password: F3NzMNuYnG7akU2mSlBY
+  udp: true
+  sni: www.microsoft.com
+  skip-cert-verify: true
+- name: JP-003 | 日本 | VLESS | 001
   type: vless
   server: 158.101.151.157
   port: 443
@@ -214,90 +224,7 @@ proxies:
   reality-opts:
     public-key: 99eQkMBHqOEKororOWKFlmH8M0o9VaVpV9w1vQIxhz8
     short-id: 684c7531e599dec0
-- name: JP-003 | 日本 | VMESS | 003
-  type: vmess
-  server: 161.33.20.255
-  port: 8880
-  uuid: e0856508-d693-450a-a099-455091dc4f25
-  alterId: 0
-  cipher: auto
-  udp: true
-  network: ws
-  ws-opts:
-    path: /e0856508-d693-450a-a099-455091dc4f25-vm
-- name: JP-004 | 日本 | HYSTERIA2 | 001
-  type: hysteria2
-  server: 8.209.247.109
-  port: 443
-  password: usqmqUKJFIlCmvkCNSY64L3k
-  sni: 8.209.247.109
-  skip-cert-verify: true
-  udp: true
-- cipher: aes-128-gcm
-  name: JP-005 | SS-JP 003
-  password: shadowsocks
-  port: 443
-  server: 149.22.87.204
-  type: ss
-  udp: true
-- name: JP-006 | HYSTERIA2 001
-  password: u63SxILNwtrQZ7Y1ZrFaZfsA
-  port: 8443
-  server: 8.211.175.236
-  skip-cert-verify: true
-  sni: ''
-  type: hysteria2
-  udp: true
-- name: JP-007 | 日本 | VMESS | 001
-  type: vmess
-  server: 168.138.43.75
-  port: 80
-  uuid: 11c3627f-31e8-4695-dfbd-34076e2f1f5d
-  alterId: 0
-  cipher: auto
-  udp: true
-  network: ws
-  ws-opts:
-    path: /cctv13.m3u8
-    headers:
-      Host: None
-- name: JP-008 | 日本 | JPN 001
-  server: vl-x2.qz10086.top
-  port: 38105
-  type: vless
-  uuid: d235ad20-8f30-441e-871e-ee2695e4c430
-  tls: true
-  packet-encoding: xudp
-  flow: xtls-rprx-vision
-  reality-opts:
-    public-key: y0p1yI8OoWqcOE4XEv7ueudaSOOc5UIb5yFyA3SstD8
-    short-id: 7e7e8c23
-  servername: www.apple.com
-  client-fingerprint: firefox
-  network: tcp
-  udp: true
-- cipher: aes-128-gcm
-  name: JP-009 | SS-JP 001
-  password: shadowsocks
-  port: 443
-  server: 149.22.87.240
-  type: ss
-  udp: true
-- name: JP-010 | 俄罗斯 莫斯科MELBICOM数据中心 001
-  server: 213.183.41.31
-  port: 8463
-  type: vless
-  uuid: eb62cabf-5901-403a-aa0c-b1d9ed1b346d
-  tls: true
-  servername: share.plumstatic.com
-  client-fingerprint: firefox
-  network: ws
-  ws-opts:
-    path: /ws
-    headers:
-      Host: share.plumstatic.com
-  udp: true
-- name: JP-011 | 日本 | VMESS | 002
+- name: JP-004 | 日本 | VMESS | 002
   type: vmess
   server: 168.110.63.247
   port: 8081
@@ -308,51 +235,174 @@ proxies:
   network: ws
   ws-opts:
     path: /vless
-- name: JP-012 | 日本 | SS | 001
-  type: ss
-  server: jpa.123069.xyz
-  port: 53758
-  cipher: aes-128-gcm
-  password: Bwlqh7GcFB
+- name: JP-005 | HYSTERIA2 001
+  password: usqmqUKJFIlCmvkCNSY64L3k
+  port: 443
+  server: 8.209.247.109
+  skip-cert-verify: true
+  sni: bing.com
+  type: hysteria2
   udp: true
-- name: JP-013 | IEPL|JP 日本01|通用 001
-  server: e.node001.download
-  port: 24346
-  type: ss
-  cipher: chacha20-ietf-poly1305
-  password: aqfNMqGyxRTHwXOy
+- name: JP-006 | 日本 | JPN 002
+  password: c0e8e373-946f-4862-98e6-3aaf1db7b53c
+  port: 57180
+  server: media.gosthk.site
+  skip-cert-verify: true
+  sni: media.gosthk.site
+  type: anytls
   udp: true
-- name: JP-014 | IEPL|JP 日本03|通用 001
-  server: e.node001.download
-  port: 49748
+- name: JP-007 | 日本 | SS | 055
   type: ss
-  cipher: chacha20-ietf-poly1305
-  password: aqfNMqGyxRTHwXOy
+  server: 8.216.3.83
+  port: 5555
+  cipher: aes-256-gcm
+  password: '123456'
+  udp: true
+- name: JP-008 | 日本 | VMESS | 001
+  type: vmess
+  server: 161.33.20.255
+  port: 8880
+  uuid: e0856508-d693-450a-a099-455091dc4f25
+  alterId: 0
+  cipher: auto
+  udp: true
+  network: ws
+  ws-opts:
+    path: /e0856508-d693-450a-a099-455091dc4f25-vm
+- client-fingerprint: firefox
+  name: JP-009 | VLESS-JP 001
+  network: ws
+  port: 8463
+  server: 213.183.41.31
+  servername: share.plumstatic.com
+  tls: true
+  type: vless
+  uuid: eb62cabf-5901-403a-aa0c-b1d9ed1b346d
+  ws-opts:
+    path: /ws
+  udp: true
+- name: JP-010 | 日本 | SS | 014
+  type: ss
+  server: 8.216.4.158
+  port: 5555
+  cipher: aes-256-gcm
+  password: '123456'
+  udp: true
+- alterId: 0
+  cipher: auto
+  name: JP-011 | 日本 | JPN 001
+  network: ws
+  port: 443
+  server: jp032010.ssgreen.org
+  servername: JP032010.ssgreen.org
+  skip-cert-verify: true
+  tls: true
+  type: vmess
+  uuid: f9a1ee44-21b3-4d0e-81b6-265fa2f3ba57
+  ws-opts:
+    headers:
+      Host: JP032010.ssgreen.org
+    path: /wes
+  udp: true
+- type: ss
+  name: JP-012 | 日本 | SS | 024
+  server: 8.216.6.19
+  port: 5555
+  password: '123456'
+  cipher: aes-256-gcm
+  udp: true
+  tls: false
+  skip-cert-verify: false
+- alpn:
+  - ''
+  alterId: 0
+  cipher: auto
+  name: JP-013 | 美国 | USA 001
+  network: ws
+  port: 443
+  server: jp032011.ssgreen.org
+  skip-cert-verify: true
+  tls: true
+  type: vmess
+  udp: true
+  uuid: 4b9dc0c5-388d-45c5-9ad3-a91db984784e
+  ws-opts:
+    headers:
+      Host: JP032011.ssgreen.org
+    path: /wes
+- name: JP-014 | 日本 | SS | 013
+  type: ss
+  server: 8.216.5.230
+  port: 5555
+  cipher: aes-256-gcm
+  password: '123456'
+  udp: true
+- name: JP-015 | 日本 | SS | 049
+  type: ss
+  server: 8.209.198.176
+  port: 5555
+  cipher: aes-256-gcm
+  password: '123456'
+  udp: true
+- cipher: aes-128-gcm
+  name: JP-016 | SS-JP 002
+  password: shadowsocks
+  port: 443
+  server: 149.22.87.241
+  type: ss
+  udp: true
+- name: JP-017 | 日本 | SS | 046
+  type: ss
+  server: 8.216.8.0
+  port: 5555
+  cipher: aes-256-gcm
+  password: '123456'
+  udp: true
+- name: JP-018 | 日本 | SS | 027
+  type: ss
+  server: 8.216.15.30
+  port: 5555
+  cipher: aes-256-gcm
+  password: '123456'
+  udp: true
+- name: JP-019 | 日本 | SS | 018
+  type: ss
+  server: 8.216.8.176
+  port: 5555
+  cipher: aes-256-gcm
+  password: '123456'
+  udp: true
+- name: JP-020 | 日本 | SS | 031
+  type: ss
+  server: 8.216.17.52
+  port: 5555
+  cipher: aes-256-gcm
+  password: '123456'
   udp: true
 proxy-groups:
 - name: 美国优选20
   type: select
   proxies: &id001
-  - US-001 | US-HTTP 005
-  - US-002 | 美国 | SS | 003
+  - US-001 | US-HTTP 004
+  - US-002 | SHADOWSOCKS 021
   - US-003 | TROJAN 005
-  - US-004 | 美国 | VLESS | 002
-  - US-005 | VMESS 003
-  - US-006 | HYSTERIA2 001
-  - US-007 | US-美国-IPV 001
-  - US-008 | PROXYPOOL | 台湾 | TWN 001
-  - US-009 | 美国 | HYSTERIA2 | 002
-  - US-010 | 美国 | VMESS | 001
-  - US-011 | 美国 | SS | 001
-  - US-012 | US-HTTP 004
-  - US-013 | 美国 | VLESS | 003
-  - US-014 | TROJAN 003
-  - US-015 | 美国 | HYSTERIA2 | 001
-  - US-016 | US-HTTP 003
-  - US-017 | SHADOWSOCKS 003
-  - US-018 | 巴西 001
-  - US-019 | 美国 | VMESS | 016
-  - US-020 | TROJAN 006
+  - US-004 | 美国 | VLESS | 003
+  - US-005 | 美国 | VMESS | 008
+  - US-006 | 美国 | HYSTERIA2 | 002
+  - US-007 | US-ANYTLS 001
+  - US-008 | 美国 | VMESS | 007
+  - US-009 | SHADOWSOCKS 011
+  - US-010 | VLESS 002
+  - US-011 | 美国 | HYSTERIA2 | 004
+  - US-012 | TROJAN 001
+  - US-013 | US-HTTP 013
+  - US-014 | 美国 | VMESS | 010
+  - US-015 | 美国 | SS | 004
+  - US-016 | VLESS 004
+  - US-017 | US-HTTP 023
+  - US-018 | 美国 | HYSTERIA2 | 001
+  - US-019 | TROJAN 002
+  - US-020 | 美国 | SS | 005
 - name: 美国自动测速
   type: url-test
   proxies: *id001
@@ -362,76 +412,88 @@ proxy-groups:
 - name: 意大利优选2
   type: select
   proxies: &id002
-  - IT-001 | IT-HTTP 001
-  - IT-002 | IT-HTTP 002
+  - IT-001 | IT-HTTP 002
+  - IT-002 | 意大利 | SS | 006
 - name: 意大利自动测速
   type: url-test
   proxies: *id002
   url: https://www.gstatic.com/generate_204
   interval: 300
   tolerance: 100
-- name: 日本优选14
+- name: 日本优选20
   type: select
   proxies: &id003
-  - JP-001 | SS-JP 002
-  - JP-002 | 日本 | VLESS | 001
-  - JP-003 | 日本 | VMESS | 003
-  - JP-004 | 日本 | HYSTERIA2 | 001
-  - JP-005 | SS-JP 003
-  - JP-006 | HYSTERIA2 001
-  - JP-007 | 日本 | VMESS | 001
-  - JP-008 | 日本 | JPN 001
-  - JP-009 | SS-JP 001
-  - JP-010 | 俄罗斯 莫斯科MELBICOM数据中心 001
-  - JP-011 | 日本 | VMESS | 002
-  - JP-012 | 日本 | SS | 001
-  - JP-013 | IEPL|JP 日本01|通用 001
-  - JP-014 | IEPL|JP 日本03|通用 001
+  - JP-001 | SS-JP 003
+  - JP-002 | 日本 | TROJAN | 001
+  - JP-003 | 日本 | VLESS | 001
+  - JP-004 | 日本 | VMESS | 002
+  - JP-005 | HYSTERIA2 001
+  - JP-006 | 日本 | JPN 002
+  - JP-007 | 日本 | SS | 055
+  - JP-008 | 日本 | VMESS | 001
+  - JP-009 | VLESS-JP 001
+  - JP-010 | 日本 | SS | 014
+  - JP-011 | 日本 | JPN 001
+  - JP-012 | 日本 | SS | 024
+  - JP-013 | 美国 | USA 001
+  - JP-014 | 日本 | SS | 013
+  - JP-015 | 日本 | SS | 049
+  - JP-016 | SS-JP 002
+  - JP-017 | 日本 | SS | 046
+  - JP-018 | 日本 | SS | 027
+  - JP-019 | 日本 | SS | 018
+  - JP-020 | 日本 | SS | 031
 - name: 日本自动测速
   type: url-test
   proxies: *id003
   url: https://www.gstatic.com/generate_204
   interval: 300
   tolerance: 100
-- name: 三国优选36
+- name: 三国优选42
   type: select
   proxies: &id004
-  - US-001 | US-HTTP 005
-  - US-002 | 美国 | SS | 003
+  - US-001 | US-HTTP 004
+  - US-002 | SHADOWSOCKS 021
   - US-003 | TROJAN 005
-  - US-004 | 美国 | VLESS | 002
-  - US-005 | VMESS 003
-  - US-006 | HYSTERIA2 001
-  - US-007 | US-美国-IPV 001
-  - US-008 | PROXYPOOL | 台湾 | TWN 001
-  - US-009 | 美国 | HYSTERIA2 | 002
-  - US-010 | 美国 | VMESS | 001
-  - US-011 | 美国 | SS | 001
-  - US-012 | US-HTTP 004
-  - US-013 | 美国 | VLESS | 003
-  - US-014 | TROJAN 003
-  - US-015 | 美国 | HYSTERIA2 | 001
-  - US-016 | US-HTTP 003
-  - US-017 | SHADOWSOCKS 003
-  - US-018 | 巴西 001
-  - US-019 | 美国 | VMESS | 016
-  - US-020 | TROJAN 006
-  - IT-001 | IT-HTTP 001
-  - IT-002 | IT-HTTP 002
-  - JP-001 | SS-JP 002
-  - JP-002 | 日本 | VLESS | 001
-  - JP-003 | 日本 | VMESS | 003
-  - JP-004 | 日本 | HYSTERIA2 | 001
-  - JP-005 | SS-JP 003
-  - JP-006 | HYSTERIA2 001
-  - JP-007 | 日本 | VMESS | 001
-  - JP-008 | 日本 | JPN 001
-  - JP-009 | SS-JP 001
-  - JP-010 | 俄罗斯 莫斯科MELBICOM数据中心 001
-  - JP-011 | 日本 | VMESS | 002
-  - JP-012 | 日本 | SS | 001
-  - JP-013 | IEPL|JP 日本01|通用 001
-  - JP-014 | IEPL|JP 日本03|通用 001
+  - US-004 | 美国 | VLESS | 003
+  - US-005 | 美国 | VMESS | 008
+  - US-006 | 美国 | HYSTERIA2 | 002
+  - US-007 | US-ANYTLS 001
+  - US-008 | 美国 | VMESS | 007
+  - US-009 | SHADOWSOCKS 011
+  - US-010 | VLESS 002
+  - US-011 | 美国 | HYSTERIA2 | 004
+  - US-012 | TROJAN 001
+  - US-013 | US-HTTP 013
+  - US-014 | 美国 | VMESS | 010
+  - US-015 | 美国 | SS | 004
+  - US-016 | VLESS 004
+  - US-017 | US-HTTP 023
+  - US-018 | 美国 | HYSTERIA2 | 001
+  - US-019 | TROJAN 002
+  - US-020 | 美国 | SS | 005
+  - IT-001 | IT-HTTP 002
+  - IT-002 | 意大利 | SS | 006
+  - JP-001 | SS-JP 003
+  - JP-002 | 日本 | TROJAN | 001
+  - JP-003 | 日本 | VLESS | 001
+  - JP-004 | 日本 | VMESS | 002
+  - JP-005 | HYSTERIA2 001
+  - JP-006 | 日本 | JPN 002
+  - JP-007 | 日本 | SS | 055
+  - JP-008 | 日本 | VMESS | 001
+  - JP-009 | VLESS-JP 001
+  - JP-010 | 日本 | SS | 014
+  - JP-011 | 日本 | JPN 001
+  - JP-012 | 日本 | SS | 024
+  - JP-013 | 美国 | USA 001
+  - JP-014 | 日本 | SS | 013
+  - JP-015 | 日本 | SS | 049
+  - JP-016 | SS-JP 002
+  - JP-017 | 日本 | SS | 046
+  - JP-018 | 日本 | SS | 027
+  - JP-019 | 日本 | SS | 018
+  - JP-020 | 日本 | SS | 031
 - name: 三国自动测速
   type: url-test
   proxies: *id004
@@ -439,4 +501,4 @@ proxy-groups:
   interval: 300
   tolerance: 100
 rules:
-- MATCH,三国优选36
+- MATCH,三国优选42
