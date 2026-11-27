@@ -1,0 +1,391 @@
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: warning
+ipv6: false
+proxies:
+- name: US-001 | US-HTTP 038
+  type: http
+  server: 138.199.35.216
+  port: 9002
+  udp: true
+  tls: true
+  skip-cert-verify: true
+  password: None
+- name: US-002 | 美国 | SS | 013
+  type: ss
+  server: 38.143.66.146
+  port: 19999
+  cipher: aes-256-gcm
+  password: ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4=
+  udp: true
+- name: US-003 | TROJAN 001
+  password: nwilryafgkyvuxauc8pz
+  port: 50875
+  server: 69.164.240.85
+  skip-cert-verify: true
+  sni: ''
+  type: trojan
+  udp: true
+- name: US-004 | 美国 | VLESS | 003
+  type: vless
+  server: 156.229.167.109
+  port: 8443
+  uuid: eb8c97f7-a154-4442-91b0-54c0d055ad0b
+  udp: true
+  tls: true
+  servername: github.githubassets.com
+  client-fingerprint: chrome
+  reality-opts:
+    public-key: 4g6gX0ueJap7pY_iTDx23h6bzo3KIOTcFzP1Uacn0QA
+    short-id: 4ad2e4e660550e43
+- name: US-005 | 美国 | VMESS | 008
+  type: vmess
+  server: 23.150.152.65
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: xmfhlpy.com
+- name: US-006 | 美国 | HYSTERIA2 | 001
+  type: hysteria2
+  server: 47.89.232.46
+  port: 8443
+  password: 4afd4e1b1b0edd429b10d800a1cf64a7
+  sni: hysteria2.local
+  skip-cert-verify: true
+  udp: true
+- type: hysteria
+  name: US-007 | US-美国-IPV 001
+  server: 38.6.222.131
+  port: 11008
+  password: dongtaiwang.com
+  tls: true
+  servername: bing.com
+  sni: bing.com
+  skip-cert-verify: true
+  alpn:
+  - h3
+  up: '11'
+  down: '55'
+  auth-str: dongtaiwang.com
+  udp: true
+- type: anytls
+  name: US-008 | TW-台湾-US-美国-IPV 001
+  server: sdf65h46wr.df6h451rh.xin
+  port: 443
+  password: 0324fbc29561
+  tls: true
+  servername: images.ctfassets.net
+  sni: images.ctfassets.net
+  skip-cert-verify: true
+  udp: true
+- name: US-009 | 美国 | HYSTERIA2 | 002
+  type: hysteria2
+  server: 38.76.150.108
+  port: 36712
+  password: AIcYjw5Oc9Rrrr9SGDUBbBIC
+  sni: 38.76.150.108
+  skip-cert-verify: true
+  udp: true
+- name: US-010 | US-HTTP 009
+  type: http
+  server: 138.199.35.199
+  port: 9002
+  udp: true
+  tls: true
+  skip-cert-verify: true
+  password: None
+- cipher: aes-128-gcm
+  name: US-011 | SHADOWSOCKS 008
+  password: shadowsocks
+  port: 443
+  server: 173.244.56.9
+  type: ss
+  udp: true
+- name: US-012 | 美国 | VMESS | 003
+  type: vmess
+  server: 162.251.61.46
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: xmfhlpy.com
+- name: US-013 | 美国 | VLESS | 002
+  type: vless
+  server: 216.227.161.95
+  port: 7443
+  uuid: 218fd696-e3a2-4c33-b397-a5f13a82969e
+  udp: true
+  tls: true
+  servername: media3.abvphelp.cc
+  client-fingerprint: firefox
+  reality-opts:
+    public-key: uNqGvaJEIFTFQvAxsTDhetPxkIWzJuBtxXsK0yFMYzM
+    short-id: 48d5cf47
+  network: grpc
+  grpc-opts:
+    grpc-service-name: grpc
+- name: US-014 | US-HTTP 014
+  type: http
+  server: 138.199.35.219
+  port: 9002
+  udp: true
+  tls: true
+  skip-cert-verify: true
+  username: 'null'
+  password: 'null'
+- cipher: rc4-md5
+  name: US-015 | SHADOWSOCKS 002
+  password: 14fFPrbezE3HDZzsMOr6
+  port: 8080
+  server: 79.110.54.250
+  type: ss
+  udp: true
+- name: US-016 | 美国 | VMESS | 001
+  type: vmess
+  server: 38.128.66.249
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: xmfhlpy.com
+- name: US-017 | 美国 | HYSTERIA2 | 003
+  type: hysteria2
+  server: 172.87.24.53
+  port: 8443
+  password: fce629d692a7b1ad71a17dae29d8b3c6
+  sni: hy2k2p.local
+  skip-cert-verify: true
+  udp: true
+- name: US-018 | 美国 | VLESS | 004
+  type: vless
+  server: 45.61.186.3
+  port: 443
+  uuid: 140d6fc9-2c6d-41bd-a487-182b52c0184f
+  udp: true
+  flow: xtls-rprx-vision
+  tls: true
+  servername: caissuers.microsoft.com
+  client-fingerprint: chrome
+  reality-opts:
+    public-key: rA1BaV8FUcTMs25jXCZkUV3DG0-NQEFmvVHdPlUXAHI
+    short-id: d898752d58acbfe0
+- name: US-019 | US-HTTP 025
+  type: http
+  server: 138.199.35.203
+  port: 9002
+  udp: true
+  tls: true
+  skip-cert-verify: true
+- name: US-020 | 美国 | VMESS | 004
+  type: vmess
+  server: 38.128.66.212
+  port: 1270
+  uuid: 5c040f1d-45db-43bd-8d46-e4950e433735
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: xmfhlpy.com
+- name: IT-001 | IT-HTTP 001
+  type: http
+  server: 91.243.118.217
+  port: 443
+  udp: true
+  tls: true
+  skip-cert-verify: true
+- cipher: chacha20-ietf-poly1305
+  name: IT-002 | IT-9|3.9MB 001
+  password: 034b5d9404b79a2df62fcb77a49cf748306765448d8b5e93
+  plugin: v2ray-plugin
+  plugin-opts:
+    host: italy.astroapps.io
+    mode: websocket
+    path: /b5cba947dfef6a5494b25d76
+    tls: true
+  port: 443
+  server: italy.astroapps.io
+  type: ss
+  udp: true
+- name: IT-003 | 意大利 | SS | 002
+  type: ss
+  server: 91.201.65.122
+  port: 9092
+  cipher: aes-256-cfb
+  password: TyNkGmp9hs6eGpDK
+  udp: true
+- name: IT-004 | IT-HTTP 002
+  type: http
+  server: 109.116.41.154
+  port: 443
+  udp: true
+  tls: true
+  skip-cert-verify: true
+- cipher: aes-128-gcm
+  name: JP-001 | SS-JP 002
+  password: shadowsocks
+  port: 443
+  server: 149.22.87.240
+  type: ss
+  udp: true
+- client-fingerprint: firefox
+  encryption: none
+  name: JP-002 | JP-1|1.1MB 001
+  network: tcp
+  port: 443
+  server: 50.7.159.242
+  servername: jp.reddotcorp.org
+  tls: true
+  type: vless
+  udp: true
+  uuid: 8840fac2-5361-4cb6-b887-cd1b95092394
+  xudp: true
+- name: JP-003 | 日本 | VMESS | 001
+  type: vmess
+  server: 161.33.20.255
+  port: 8880
+  uuid: e0856508-d693-450a-a099-455091dc4f25
+  alterId: 0
+  cipher: auto
+  udp: true
+  network: ws
+  ws-opts:
+    path: /e0856508-d693-450a-a099-455091dc4f25-vm
+- name: JP-004 | HYSTERIA2 003
+  password: u63SxILNwtrQZ7Y1ZrFaZfsA
+  port: 8443
+  server: 8.211.175.236
+  skip-cert-verify: true
+  sni: 8.211.175.236
+  type: hysteria2
+  udp: true
+- cipher: aes-128-gcm
+  name: JP-005 | SS-JP 001
+  password: shadowsocks
+  port: 443
+  server: 149.22.87.241
+  type: ss
+  udp: true
+- name: JP-006 | 日本 | HYSTERIA2 | 001
+  type: hysteria2
+  server: 129.225.181.46
+  port: 8443
+  password: oracle_hy2_pass_2026
+  sni: bing.com
+  skip-cert-verify: true
+  udp: true
+- name: JP-007 | 未知地区 | SS | 002
+  type: ss
+  server: 8.216.9.41
+  port: 5555
+  cipher: aes-256-gcm
+  password: '123456'
+  udp: true
+proxy-groups:
+- name: 美国优选20
+  type: select
+  proxies: &id001
+  - US-001 | US-HTTP 038
+  - US-002 | 美国 | SS | 013
+  - US-003 | TROJAN 001
+  - US-004 | 美国 | VLESS | 003
+  - US-005 | 美国 | VMESS | 008
+  - US-006 | 美国 | HYSTERIA2 | 001
+  - US-007 | US-美国-IPV 001
+  - US-008 | TW-台湾-US-美国-IPV 001
+  - US-009 | 美国 | HYSTERIA2 | 002
+  - US-010 | US-HTTP 009
+  - US-011 | SHADOWSOCKS 008
+  - US-012 | 美国 | VMESS | 003
+  - US-013 | 美国 | VLESS | 002
+  - US-014 | US-HTTP 014
+  - US-015 | SHADOWSOCKS 002
+  - US-016 | 美国 | VMESS | 001
+  - US-017 | 美国 | HYSTERIA2 | 003
+  - US-018 | 美国 | VLESS | 004
+  - US-019 | US-HTTP 025
+  - US-020 | 美国 | VMESS | 004
+- name: 美国自动测速
+  type: url-test
+  proxies: *id001
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+- name: 意大利优选4
+  type: select
+  proxies: &id002
+  - IT-001 | IT-HTTP 001
+  - IT-002 | IT-9|3.9MB 001
+  - IT-003 | 意大利 | SS | 002
+  - IT-004 | IT-HTTP 002
+- name: 意大利自动测速
+  type: url-test
+  proxies: *id002
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+- name: 日本优选7
+  type: select
+  proxies: &id003
+  - JP-001 | SS-JP 002
+  - JP-002 | JP-1|1.1MB 001
+  - JP-003 | 日本 | VMESS | 001
+  - JP-004 | HYSTERIA2 003
+  - JP-005 | SS-JP 001
+  - JP-006 | 日本 | HYSTERIA2 | 001
+  - JP-007 | 未知地区 | SS | 002
+- name: 日本自动测速
+  type: url-test
+  proxies: *id003
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+- name: 三国优选31
+  type: select
+  proxies: &id004
+  - US-001 | US-HTTP 038
+  - US-002 | 美国 | SS | 013
+  - US-003 | TROJAN 001
+  - US-004 | 美国 | VLESS | 003
+  - US-005 | 美国 | VMESS | 008
+  - US-006 | 美国 | HYSTERIA2 | 001
+  - US-007 | US-美国-IPV 001
+  - US-008 | TW-台湾-US-美国-IPV 001
+  - US-009 | 美国 | HYSTERIA2 | 002
+  - US-010 | US-HTTP 009
+  - US-011 | SHADOWSOCKS 008
+  - US-012 | 美国 | VMESS | 003
+  - US-013 | 美国 | VLESS | 002
+  - US-014 | US-HTTP 014
+  - US-015 | SHADOWSOCKS 002
+  - US-016 | 美国 | VMESS | 001
+  - US-017 | 美国 | HYSTERIA2 | 003
+  - US-018 | 美国 | VLESS | 004
+  - US-019 | US-HTTP 025
+  - US-020 | 美国 | VMESS | 004
+  - IT-001 | IT-HTTP 001
+  - IT-002 | IT-9|3.9MB 001
+  - IT-003 | 意大利 | SS | 002
+  - IT-004 | IT-HTTP 002
+  - JP-001 | SS-JP 002
+  - JP-002 | JP-1|1.1MB 001
+  - JP-003 | 日本 | VMESS | 001
+  - JP-004 | HYSTERIA2 003
+  - JP-005 | SS-JP 001
+  - JP-006 | 日本 | HYSTERIA2 | 001
+  - JP-007 | 未知地区 | SS | 002
+- name: 三国自动测速
+  type: url-test
+  proxies: *id004
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 100
+rules:
+- MATCH,三国优选31
